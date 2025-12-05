@@ -1,22 +1,6 @@
 # Claude Code
 .claude/
 
-# Python cache
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-
-# Virtual environment
-venv/
-env/
-ENV/
-
-# Data files (large CSVs and cache)
-data/processed/*.csv
-data/cache/*.json
-CRA Lists/*.csv
-
 # Output files (can be regenerated)
 output/*.html
 
