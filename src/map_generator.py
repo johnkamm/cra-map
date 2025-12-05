@@ -109,6 +109,22 @@ class MapGenerator:
             self.marker_groups[key] = marker_cluster
             fg.add_to(self.map)
 
+        # Create inactive licenses layer
+        inactive_fg = folium.FeatureGroup(name="Inactive Licenses (All Types)", show=True)
+        inactive_cluster = MarkerCluster(
+            name='Inactive Licenses Cluster',
+            options={
+                'maxClusterRadius': MAP.MAX_CLUSTER_RADIUS,
+                'spiderfyOnMaxZoom': True,
+                'showCoverageOnHover': False,
+                'zoomToBoundsOnClick': True,
+                'disableClusteringAtZoom': MAP.DISABLE_CLUSTERING_AT_ZOOM
+            }
+        )
+        inactive_cluster.add_to(inactive_fg)
+        self.marker_groups['inactive'] = inactive_cluster
+        inactive_fg.add_to(self.map)
+
         logger.info(f"Created {len(self.marker_groups)} feature groups with clustering")
 
     def _aggregate_by_location(self, df: pd.DataFrame) -> Dict:
@@ -197,10 +213,13 @@ class MapGenerator:
             opacity=opacity
         )
 
-        # Add to appropriate feature group
-        group_key = f"{category}_{market_type}"
-        if group_key in self.marker_groups:
-            marker.add_to(self.marker_groups[group_key])
+        # Add to appropriate feature group (inactive or category-specific)
+        if not is_active:
+            marker.add_to(self.marker_groups['inactive'])
+        else:
+            group_key = f"{category}_{market_type}"
+            if group_key in self.marker_groups:
+                marker.add_to(self.marker_groups[group_key])
 
     def _create_aggregated_marker(self, lat: float, lon: float, licenses: List[Dict], primary: Dict):
         """Create marker for multiple licenses at same location"""
@@ -230,10 +249,13 @@ class MapGenerator:
             opacity=opacity
         )
 
-        # Add to appropriate feature group
-        group_key = f"{category}_{market_type}"
-        if group_key in self.marker_groups:
-            marker.add_to(self.marker_groups[group_key])
+        # Add to appropriate feature group (inactive or category-specific)
+        if not is_active:
+            marker.add_to(self.marker_groups['inactive'])
+        else:
+            group_key = f"{category}_{market_type}"
+            if group_key in self.marker_groups:
+                marker.add_to(self.marker_groups[group_key])
 
     def _create_popup_html(self, licenses: List[Dict], is_aggregated: bool = False) -> str:
         """Create HTML content for popup"""
