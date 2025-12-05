@@ -286,21 +286,27 @@ class MapGenerator:
         """Create HTML content for popup"""
         from collections import defaultdict
 
+        # Count active vs inactive licenses
+        active_count = sum(1 for lic in licenses if is_active_status(lic['status']))
+        inactive_count = len(licenses) - active_count
+
         # Group licenses by type
         license_groups = defaultdict(list)
         for lic in licenses:
             # Create a key for grouping: market_type, category, and class
             license_class = lic['license_class']
             class_str = f" (Class {license_class})" if license_class and str(license_class) != 'nan' else ""
-            group_key = (lic['market_type'], lic['license_category'], class_str, lic['status'])
+            is_active = is_active_status(lic['status'])
+            group_key = (is_active, lic['market_type'], lic['license_category'], class_str, lic['status'])
             license_groups[group_key].append(lic)
 
-        # Start HTML
+        # Start HTML with active/inactive breakdown
+        html = f"<div style='font-family: Arial, sans-serif;'>"
         if is_aggregated:
-            html = f"<div style='font-family: Arial, sans-serif;'>"
-            html += f"<h4 style='margin: 5px 0;'>{len(licenses)} Licenses at this location</h4>"
-        else:
-            html = "<div style='font-family: Arial, sans-serif;'>"
+            if inactive_count > 0:
+                html += f"<h4 style='margin: 5px 0;'>{active_count} Active License{'s' if active_count != 1 else ''} ({inactive_count} Inactive) at this location</h4>"
+            else:
+                html += f"<h4 style='margin: 5px 0;'>{active_count} Active License{'s' if active_count != 1 else ''} at this location</h4>"
 
         # Get business name and address from first license
         first_license = licenses[0]
@@ -313,9 +319,8 @@ class MapGenerator:
 
         html += "<br>"
 
-        # Show grouped license types with counts
-        for (market_type, category, class_str, status), group_licenses in sorted(license_groups.items()):
-            is_active = is_active_status(status)
+        # Show grouped license types with counts, sorted with active licenses first
+        for (is_active, market_type, category, class_str, status), group_licenses in sorted(license_groups.items(), key=lambda x: (not x[0][0], x[0][1], x[0][2], x[0][3])):
             border_color = get_color(category, market_type, is_active)
             count = len(group_licenses)
 
