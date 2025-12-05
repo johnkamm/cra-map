@@ -1,0 +1,1954 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_69b9ba6dcc61ac2d950eca4573a7219f {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.Default.css"/>
+</head>
+<body>
+    
+    
+        <div style="position: fixed;
+                    top: 10px; right: 10px; width: 250px;
+                    background-color: white; border: 2px solid grey;
+                    z-index: 9999; font-size: 13px; padding: 10px;
+                    font-family: Arial, sans-serif;">
+            <p style="margin: 0 0 8px 0;"><b>Michigan Cannabis Licenses</b></p>
+            <p style="margin: 3px 0;"><i class="fa fa-leaf" style="color:#2D5016"></i> Grower (Adult Use)</p>
+            <p style="margin: 3px 0;"><i class="fa fa-leaf" style="color:#7CB342"></i> Grower (Medical)</p>
+            <p style="margin: 3px 0;"><i class="fa fa-flask" style="color:#1565C0"></i> Processor (Adult Use)</p>
+            <p style="margin: 3px 0;"><i class="fa fa-flask" style="color:#42A5F5"></i> Processor (Medical)</p>
+            <p style="margin: 3px 0;"><i class="fa fa-shopping-cart" style="color:#6A1B9A"></i> Retailer (Adult Use)</p>
+            <p style="margin: 3px 0;"><i class="fa fa-shopping-cart" style="color:#AB47BC"></i> Retailer (Medical)</p>
+            <p style="margin: 3px 0;"><i class="fa fa-truck" style="color:#E65100"></i> Transporter (Adult Use)</p>
+            <p style="margin: 3px 0;"><i class="fa fa-truck" style="color:#FF9800"></i> Transporter (Medical)</p>
+            <hr style="margin: 8px 0;">
+            <p style="margin: 3px 0;"><i class="fa fa-circle" style="color:#BDBDBD"></i> Inactive/Closed</p>
+            <p style="margin: 8px 0 0 0; font-size: 11px; color: #666;">
+                Use layer control (top right) to filter license types
+            </p>
+        </div>
+        
+    
+            <div class="folium-map" id="map_69b9ba6dcc61ac2d950eca4573a7219f" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_69b9ba6dcc61ac2d950eca4573a7219f = L.map(
+                "map_69b9ba6dcc61ac2d950eca4573a7219f",
+                {
+                    center: [44.3148, -85.6024],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 7,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_1d4f5f2b77ab2ad20e9d3e5c3fac7cde = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_1d4f5f2b77ab2ad20e9d3e5c3fac7cde.addTo(map_69b9ba6dcc61ac2d950eca4573a7219f);
+        
+    
+            var feature_group_135f210838d430d7aa41e852bcc84fcf = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_cluster_6d134cf6ed22710c0eefba7daba7e525 = L.markerClusterGroup(
+                {
+  "maxClusterRadius": 50,
+  "spiderfyOnMaxZoom": true,
+  "showCoverageOnHover": false,
+  "zoomToBoundsOnClick": true,
+  "disableClusteringAtZoom": 15,
+}
+            );
+        
+    
+            var marker_bd5c62d25d48432d419ff628c4639d33 = L.marker(
+                [44.916583, -84.970555],
+                {
+  "opacity": 1.0,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_94339ffaaa627bd318c0fab2df371573 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "darkgreen",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_15cef783dd8c92dd815fd07f06298f20 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_a70ba6e34abe3ddb5479fd60e94027a9 = $(`<div id="html_a70ba6e34abe3ddb5479fd60e94027a9" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><h4 style='margin: 5px 0;'>2 Licenses at this location</h4><div style='border-left: 3px solid #2D5016; padding-left: 8px; margin-bottom: 10px;'><b>White Ash Pak Boz</b><br><i>AU - Grower (Class A)</i><br><span style='color: #4CAF50;'>Status: Active</span><br>5963 Scholl RD, Mancelona MI 49659<br>Expires: 04/09/2026<br></div><div style='border-left: 3px solid #BDBDBD; padding-left: 8px; margin-bottom: 10px;'><b>High Bud</b><br><i>AU - Grower (Class A)</i><br><span style='color: #F44336;'>Status: License Void</span><br>5963 Scholl RD, Mancelona MI 49659<br>Expires: 05/19/2025<br></div></div></div>`)[0];
+                popup_15cef783dd8c92dd815fd07f06298f20.setContent(html_a70ba6e34abe3ddb5479fd60e94027a9);
+            
+        
+
+        marker_bd5c62d25d48432d419ff628c4639d33.bindPopup(popup_15cef783dd8c92dd815fd07f06298f20)
+        ;
+
+        
+    
+    
+            marker_bd5c62d25d48432d419ff628c4639d33.bindTooltip(
+                `<div>
+                     2 licenses at this location
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_bd5c62d25d48432d419ff628c4639d33.setIcon(icon_94339ffaaa627bd318c0fab2df371573);
+            
+    
+            var marker_83c8de6caf730eb10d68e1d17a4267f4 = L.marker(
+                [43.613715, -84.773124],
+                {
+  "opacity": 1.0,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_08fa980c6fe95e06949095f5d0d9d1df = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "darkgreen",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ffbf08924fd9df167a99a6be51289883 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ad56e958a8bfd170677b3ba21515e581 = $(`<div id="html_ad56e958a8bfd170677b3ba21515e581" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #2D5016; padding-left: 8px; margin-bottom: 10px;'><b>Little Shop of Weed</b><br><i>AU - Grower (Class A)</i><br><span style='color: #4CAF50;'>Status: Active</span><br>1012 N Lansing ST, Mt. Pleasant MI 48858<br>Expires: 03/19/2026<br></div></div></div>`)[0];
+                popup_ffbf08924fd9df167a99a6be51289883.setContent(html_ad56e958a8bfd170677b3ba21515e581);
+            
+        
+
+        marker_83c8de6caf730eb10d68e1d17a4267f4.bindPopup(popup_ffbf08924fd9df167a99a6be51289883)
+        ;
+
+        
+    
+    
+            marker_83c8de6caf730eb10d68e1d17a4267f4.bindTooltip(
+                `<div>
+                     Little Shop of Weed
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_83c8de6caf730eb10d68e1d17a4267f4.setIcon(icon_08fa980c6fe95e06949095f5d0d9d1df);
+            
+    
+            var marker_971789e9e85e0078efe34c840e00beb3 = L.marker(
+                [45.421391, -83.818185],
+                {
+  "opacity": 1.0,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_55caa8f52e7087467d14c67debe2abf7 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "darkgreen",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_bfc975f02f4cbb6a550e427581f784c0 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_880c9f408536bdf4d1637877460b8e7d = $(`<div id="html_880c9f408536bdf4d1637877460b8e7d" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #2D5016; padding-left: 8px; margin-bottom: 10px;'><b>Faded Acres LLC</b><br><i>AU - Grower (Class A)</i><br><span style='color: #4CAF50;'>Status: Active</span><br>3624 Quade HWY, Rogers City MI 49779<br>Expires: 03/09/2026<br><small style='color: #FF9800;'>⚠ City-level location</small><br></div></div></div>`)[0];
+                popup_bfc975f02f4cbb6a550e427581f784c0.setContent(html_880c9f408536bdf4d1637877460b8e7d);
+            
+        
+
+        marker_971789e9e85e0078efe34c840e00beb3.bindPopup(popup_bfc975f02f4cbb6a550e427581f784c0)
+        ;
+
+        
+    
+    
+            marker_971789e9e85e0078efe34c840e00beb3.bindTooltip(
+                `<div>
+                     Faded Acres LLC
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_971789e9e85e0078efe34c840e00beb3.setIcon(icon_55caa8f52e7087467d14c67debe2abf7);
+            
+    
+            var marker_81aa8335f43b52a7ec4219cc1a454433 = L.marker(
+                [43.22336, -85.551424],
+                {
+  "opacity": 1.0,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_5e5704a1a2dbd7e6606c4656d2ef7af6 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "darkgreen",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6feec41885c9c9bcaa1b0c4ed81a4c4b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e907c046b0a3f6923ddc41ec1b89b51a = $(`<div id="html_e907c046b0a3f6923ddc41ec1b89b51a" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #2D5016; padding-left: 8px; margin-bottom: 10px;'><b>Space Cadet Cannabis</b><br><i>AU - Grower (Class A)</i><br><span style='color: #4CAF50;'>Status: Active</span><br>14111 White Creek AVE NE Suite H, Cedar Springs MI 49319<br>Expires: 12/16/2025<br><small style='color: #FF9800;'>⚠ City-level location</small><br></div></div></div>`)[0];
+                popup_6feec41885c9c9bcaa1b0c4ed81a4c4b.setContent(html_e907c046b0a3f6923ddc41ec1b89b51a);
+            
+        
+
+        marker_81aa8335f43b52a7ec4219cc1a454433.bindPopup(popup_6feec41885c9c9bcaa1b0c4ed81a4c4b)
+        ;
+
+        
+    
+    
+            marker_81aa8335f43b52a7ec4219cc1a454433.bindTooltip(
+                `<div>
+                     Space Cadet Cannabis
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_81aa8335f43b52a7ec4219cc1a454433.setIcon(icon_5e5704a1a2dbd7e6606c4656d2ef7af6);
+            
+    
+            var marker_55296138986194b1443259b93f318962 = L.marker(
+                [43.134177, -83.701084],
+                {
+  "opacity": 1.0,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_9cbc1d2593eb17cb615a60054a89747b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "darkgreen",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c67167f8fac2365337b4a555a8154b4a = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_19a9558caf063f875b9f2e6535cca0bd = $(`<div id="html_19a9558caf063f875b9f2e6535cca0bd" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><h4 style='margin: 5px 0;'>2 Licenses at this location</h4><div style='border-left: 3px solid #BDBDBD; padding-left: 8px; margin-bottom: 10px;'><b>Tarantula Genetics, LLC</b><br><i>AU - Grower (Class A)</i><br><span style='color: #F44336;'>Status: License Void</span><br>1171 W Frances RD, Mount Morris MI 48458<br>Expires: 01/03/2026<br></div><div style='border-left: 3px solid #2D5016; padding-left: 8px; margin-bottom: 10px;'><b>Tarantula Genetics, LLC</b><br><i>AU - Grower (Class B)</i><br><span style='color: #4CAF50;'>Status: Active</span><br>1171 W Frances RD, MT Morris MI 48458<br>Expires: 04/21/2026<br></div></div></div>`)[0];
+                popup_c67167f8fac2365337b4a555a8154b4a.setContent(html_19a9558caf063f875b9f2e6535cca0bd);
+            
+        
+
+        marker_55296138986194b1443259b93f318962.bindPopup(popup_c67167f8fac2365337b4a555a8154b4a)
+        ;
+
+        
+    
+    
+            marker_55296138986194b1443259b93f318962.bindTooltip(
+                `<div>
+                     2 licenses at this location
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_55296138986194b1443259b93f318962.setIcon(icon_9cbc1d2593eb17cb615a60054a89747b);
+            
+    
+            var marker_b056c92303f9d47db990b2d0d29d730a = L.marker(
+                [44.73554, -85.174047],
+                {
+  "opacity": 0.6,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_47cb287b597867623042b45c8fedc8da = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "lightgray",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_cb5184310ae3a3ce3dd601ea5936e6c1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_636468880f43ab1c4e374a82a4879ed7 = $(`<div id="html_636468880f43ab1c4e374a82a4879ed7" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #BDBDBD; padding-left: 8px; margin-bottom: 10px;'><b>Sapura</b><br><i>AU - Grower (Class A)</i><br><span style='color: #F44336;'>Status: License Void</span><br>520 E Dresden ST, Kalkaska MI 49646<br>Expires: 04/18/2026<br></div></div></div>`)[0];
+                popup_cb5184310ae3a3ce3dd601ea5936e6c1.setContent(html_636468880f43ab1c4e374a82a4879ed7);
+            
+        
+
+        marker_b056c92303f9d47db990b2d0d29d730a.bindPopup(popup_cb5184310ae3a3ce3dd601ea5936e6c1)
+        ;
+
+        
+    
+    
+            marker_b056c92303f9d47db990b2d0d29d730a.bindTooltip(
+                `<div>
+                     Sapura
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_b056c92303f9d47db990b2d0d29d730a.setIcon(icon_47cb287b597867623042b45c8fedc8da);
+            
+    
+            var marker_816d4b7fff9702c1c04e63950848955b = L.marker(
+                [41.86227, -84.476893],
+                {
+  "opacity": 0.6,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_a43915ed76b3b926695423c3bfe8952c = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "lightgray",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_139472f57a30c7be5db0931f9d401f1d = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_ddf7b01ca8e0648a2c3170c05b369ef7 = $(`<div id="html_ddf7b01ca8e0648a2c3170c05b369ef7" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><h4 style='margin: 5px 0;'>2 Licenses at this location</h4><div style='border-left: 3px solid #BDBDBD; padding-left: 8px; margin-bottom: 10px;'><b>Tri State Wellness & Recreational</b><br><i>AU - Grower (Class A)</i><br><span style='color: #F44336;'>Status: License Void</span><br>7503 E Reading RD, Pittsford MI 49271<br>Expires: 09/27/2025<br><small style='color: #FF9800;'>⚠ City-level location</small><br></div><div style='border-left: 3px solid #BDBDBD; padding-left: 8px; margin-bottom: 10px;'><b>Green Acres Coffee House</b><br><i>AU - Unknown (Class nan)</i><br><span style='color: #F44336;'>Status: License Void</span><br>7505 E Reading RD, Pittsford MI 49271<br>Expires: 08/26/2025<br><small style='color: #FF9800;'>⚠ City-level location</small><br></div></div></div>`)[0];
+                popup_139472f57a30c7be5db0931f9d401f1d.setContent(html_ddf7b01ca8e0648a2c3170c05b369ef7);
+            
+        
+
+        marker_816d4b7fff9702c1c04e63950848955b.bindPopup(popup_139472f57a30c7be5db0931f9d401f1d)
+        ;
+
+        
+    
+    
+            marker_816d4b7fff9702c1c04e63950848955b.bindTooltip(
+                `<div>
+                     2 licenses at this location
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_816d4b7fff9702c1c04e63950848955b.setIcon(icon_a43915ed76b3b926695423c3bfe8952c);
+            
+    
+            var marker_66cfcf3595e5e497031396c3ed70819b = L.marker(
+                [42.336429, -85.352222],
+                {
+  "opacity": 1.0,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_ca0a3804df5453306ad42b1f56141e77 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "darkgreen",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f01f89dd83979ee78979180dbc906331 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1b366c4f91e4742b5056ba38ddde4599 = $(`<div id="html_1b366c4f91e4742b5056ba38ddde4599" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #2D5016; padding-left: 8px; margin-bottom: 10px;'><b>Hazen Gardens, LLC</b><br><i>AU - Grower (Class A)</i><br><span style='color: #4CAF50;'>Status: Active</span><br>21864 W County Line RD, Augusta MI 49012<br>Expires: 09/04/2026<br><small style='color: #FF9800;'>⚠ City-level location</small><br></div></div></div>`)[0];
+                popup_f01f89dd83979ee78979180dbc906331.setContent(html_1b366c4f91e4742b5056ba38ddde4599);
+            
+        
+
+        marker_66cfcf3595e5e497031396c3ed70819b.bindPopup(popup_f01f89dd83979ee78979180dbc906331)
+        ;
+
+        
+    
+    
+            marker_66cfcf3595e5e497031396c3ed70819b.bindTooltip(
+                `<div>
+                     Hazen Gardens, LLC
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_66cfcf3595e5e497031396c3ed70819b.setIcon(icon_ca0a3804df5453306ad42b1f56141e77);
+            
+    
+            var marker_d5d0b17e7614876f92cb121c67c48b42 = L.marker(
+                [44.269461, -83.514697],
+                {
+  "opacity": 1.0,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_1bd29127a9828467abbd9e71fdc6ab21 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "darkgreen",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_eabcc44ec284d796caac6854243ac29b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e214dc45221923bef0db18f9e9f6e83b = $(`<div id="html_e214dc45221923bef0db18f9e9f6e83b" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #2D5016; padding-left: 8px; margin-bottom: 10px;'><b>3165 Farms, LLC</b><br><i>AU - Grower (Class A)</i><br><span style='color: #4CAF50;'>Status: Active</span><br>3165 Alabaster RD, Tawas City MI 48763<br>Expires: 07/16/2026<br><small style='color: #FF9800;'>⚠ City-level location</small><br></div></div></div>`)[0];
+                popup_eabcc44ec284d796caac6854243ac29b.setContent(html_e214dc45221923bef0db18f9e9f6e83b);
+            
+        
+
+        marker_d5d0b17e7614876f92cb121c67c48b42.bindPopup(popup_eabcc44ec284d796caac6854243ac29b)
+        ;
+
+        
+    
+    
+            marker_d5d0b17e7614876f92cb121c67c48b42.bindTooltip(
+                `<div>
+                     3165 Farms, LLC
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d5d0b17e7614876f92cb121c67c48b42.setIcon(icon_1bd29127a9828467abbd9e71fdc6ab21);
+            
+    
+            var marker_07be944394e344a8b5529a17f63b755c = L.marker(
+                [43.968867, -84.850509],
+                {
+  "opacity": 1.0,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_9d757ca12fd98ce93dde804bfa5dd16a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "darkgreen",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_9ad3c0ee0b0237ccfed375ab7ab418b5 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_dccde051bc22bcf98cef5ceee1b903c6 = $(`<div id="html_dccde051bc22bcf98cef5ceee1b903c6" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #2D5016; padding-left: 8px; margin-bottom: 10px;'><b>Wise Tree Farms LLC</b><br><i>AU - Grower (Class A)</i><br><span style='color: #4CAF50;'>Status: Active</span><br>8751 N Wise RD, Clare MI 48617<br>Expires: 05/13/2026<br><small style='color: #FF9800;'>⚠ City-level location</small><br></div></div></div>`)[0];
+                popup_9ad3c0ee0b0237ccfed375ab7ab418b5.setContent(html_dccde051bc22bcf98cef5ceee1b903c6);
+            
+        
+
+        marker_07be944394e344a8b5529a17f63b755c.bindPopup(popup_9ad3c0ee0b0237ccfed375ab7ab418b5)
+        ;
+
+        
+    
+    
+            marker_07be944394e344a8b5529a17f63b755c.bindTooltip(
+                `<div>
+                     Wise Tree Farms LLC
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_07be944394e344a8b5529a17f63b755c.setIcon(icon_9d757ca12fd98ce93dde804bfa5dd16a);
+            
+    
+            var marker_e3c812b2a9a5fc70cbe399c55af8331f = L.marker(
+                [41.865228, -84.489172],
+                {
+  "opacity": 1.0,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_2372cca640d0ac4afc357bbf272148b9 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "darkgreen",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6a5b6a1121fe719286eac17912e095d9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_11755519709c6db46e741977f0ab1bc0 = $(`<div id="html_11755519709c6db46e741977f0ab1bc0" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #2D5016; padding-left: 8px; margin-bottom: 10px;'><b>Triforce Farm LLC</b><br><i>AU - Grower (Class A)</i><br><span style='color: #4CAF50;'>Status: Active</span><br>8310 Hudson RD, Pittsford MI 49271<br>Expires: 05/08/2026<br></div></div></div>`)[0];
+                popup_6a5b6a1121fe719286eac17912e095d9.setContent(html_11755519709c6db46e741977f0ab1bc0);
+            
+        
+
+        marker_e3c812b2a9a5fc70cbe399c55af8331f.bindPopup(popup_6a5b6a1121fe719286eac17912e095d9)
+        ;
+
+        
+    
+    
+            marker_e3c812b2a9a5fc70cbe399c55af8331f.bindTooltip(
+                `<div>
+                     Triforce Farm LLC
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_e3c812b2a9a5fc70cbe399c55af8331f.setIcon(icon_2372cca640d0ac4afc357bbf272148b9);
+            
+    
+            var marker_456a91b39221c5f5649888a163dbe69a = L.marker(
+                [44.330804, -86.026204],
+                {
+  "opacity": 1.0,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_a0aea58e9b30ad709f35a908f95a3b0a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "darkgreen",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_260a4bda27dd68b792358f8b5bf1cdc4 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_24aa14ca5168de782d60c6a54b03c69b = $(`<div id="html_24aa14ca5168de782d60c6a54b03c69b" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #2D5016; padding-left: 8px; margin-bottom: 10px;'><b>Authentic 231</b><br><i>AU - Grower (Class A)</i><br><span style='color: #4CAF50;'>Status: Active</span><br>74 Arthur ST Bldg B, Manistee MI 49660<br>Expires: 11/17/2026<br><small style='color: #FF9800;'>⚠ City-level location</small><br></div></div></div>`)[0];
+                popup_260a4bda27dd68b792358f8b5bf1cdc4.setContent(html_24aa14ca5168de782d60c6a54b03c69b);
+            
+        
+
+        marker_456a91b39221c5f5649888a163dbe69a.bindPopup(popup_260a4bda27dd68b792358f8b5bf1cdc4)
+        ;
+
+        
+    
+    
+            marker_456a91b39221c5f5649888a163dbe69a.bindTooltip(
+                `<div>
+                     Authentic 231
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_456a91b39221c5f5649888a163dbe69a.setIcon(icon_a0aea58e9b30ad709f35a908f95a3b0a);
+            
+    
+            var marker_36317d12b0627008db495c23ad3c4833 = L.marker(
+                [47.175047, -88.426376],
+                {
+  "opacity": 1.0,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_8c4b489270d683ee98cf5c7bfe5df786 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "darkgreen",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_511a2290a4ff1cbe2f1ee7f04a5d4378 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4edd1eebedb4ee9e65e1a9e998f6a85a = $(`<div id="html_4edd1eebedb4ee9e65e1a9e998f6a85a" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #2D5016; padding-left: 8px; margin-bottom: 10px;'><b>The Noggin Shop</b><br><i>AU - Grower (Class A)</i><br><span style='color: #4CAF50;'>Status: Active</span><br>52324 Duncan AVE, HUBBELL MI 49934<br>Expires: 03/16/2026<br></div></div></div>`)[0];
+                popup_511a2290a4ff1cbe2f1ee7f04a5d4378.setContent(html_4edd1eebedb4ee9e65e1a9e998f6a85a);
+            
+        
+
+        marker_36317d12b0627008db495c23ad3c4833.bindPopup(popup_511a2290a4ff1cbe2f1ee7f04a5d4378)
+        ;
+
+        
+    
+    
+            marker_36317d12b0627008db495c23ad3c4833.bindTooltip(
+                `<div>
+                     The Noggin Shop
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_36317d12b0627008db495c23ad3c4833.setIcon(icon_8c4b489270d683ee98cf5c7bfe5df786);
+            
+    
+            var marker_ac9ca6ecca21aada86c878b9b7197d95 = L.marker(
+                [44.902229, -85.060885],
+                {
+  "opacity": 0.6,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_21c1facb01f2ec9a81b8ecfb7f79eedb = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "lightgray",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c2f69987b24b0607874fbc11714ce1bf = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5fe5a82150fa53c822a272a2c61fde17 = $(`<div id="html_5fe5a82150fa53c822a272a2c61fde17" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #BDBDBD; padding-left: 8px; margin-bottom: 10px;'><b>GL Hydro Pharm LLC</b><br><i>AU - Grower (Class A)</i><br><span style='color: #F44336;'>Status: License Void</span><br>6068 South U.S. 131 HWY, Mancelona MI 49659<br>Expires: 02/13/2025<br><small style='color: #FF9800;'>⚠ City-level location</small><br></div></div></div>`)[0];
+                popup_c2f69987b24b0607874fbc11714ce1bf.setContent(html_5fe5a82150fa53c822a272a2c61fde17);
+            
+        
+
+        marker_ac9ca6ecca21aada86c878b9b7197d95.bindPopup(popup_c2f69987b24b0607874fbc11714ce1bf)
+        ;
+
+        
+    
+    
+            marker_ac9ca6ecca21aada86c878b9b7197d95.bindTooltip(
+                `<div>
+                     GL Hydro Pharm LLC
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ac9ca6ecca21aada86c878b9b7197d95.setIcon(icon_21c1facb01f2ec9a81b8ecfb7f79eedb);
+            
+    
+            var marker_0503aad54a235e6c0031f94d33007c37 = L.marker(
+                [42.255454, -84.355831],
+                {
+  "opacity": 0.6,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_1a8b8a04c9038c0915e8beca07181e15 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "lightgray",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_501b67933029a2044c6c7465f8f6c54b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b459e22e16cc6547cb4c20dc0bece59e = $(`<div id="html_b459e22e16cc6547cb4c20dc0bece59e" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #BDBDBD; padding-left: 8px; margin-bottom: 10px;'><b>World Selections</b><br><i>AU - Grower (Class A)</i><br><span style='color: #F44336;'>Status: License Void</span><br>220 Watts RD, Jackson MI 49201<br>Expires: 02/10/2025<br></div></div></div>`)[0];
+                popup_501b67933029a2044c6c7465f8f6c54b.setContent(html_b459e22e16cc6547cb4c20dc0bece59e);
+            
+        
+
+        marker_0503aad54a235e6c0031f94d33007c37.bindPopup(popup_501b67933029a2044c6c7465f8f6c54b)
+        ;
+
+        
+    
+    
+            marker_0503aad54a235e6c0031f94d33007c37.bindTooltip(
+                `<div>
+                     World Selections
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_0503aad54a235e6c0031f94d33007c37.setIcon(icon_1a8b8a04c9038c0915e8beca07181e15);
+            
+    
+            var marker_218eef4361ba75decdda50fe1132c5ae = L.marker(
+                [41.885881, -84.544117],
+                {
+  "opacity": 0.6,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_a30a37996478475824d00845fce804a8 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "lightgray",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f540f47ab0b3e23be3a0ca8380fc0e02 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6cdd3448b4cd6063cb2ddd420391bc20 = $(`<div id="html_6cdd3448b4cd6063cb2ddd420391bc20" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #BDBDBD; padding-left: 8px; margin-bottom: 10px;'><b>Spring Valley Growers, LLC</b><br><i>AU - Grower (Class A)</i><br><span style='color: #F44336;'>Status: License Void</span><br>3314 Pleasant DR, Osseo MI 49266<br>Expires: 10/27/2024<br><small style='color: #FF9800;'>⚠ City-level location</small><br></div></div></div>`)[0];
+                popup_f540f47ab0b3e23be3a0ca8380fc0e02.setContent(html_6cdd3448b4cd6063cb2ddd420391bc20);
+            
+        
+
+        marker_218eef4361ba75decdda50fe1132c5ae.bindPopup(popup_f540f47ab0b3e23be3a0ca8380fc0e02)
+        ;
+
+        
+    
+    
+            marker_218eef4361ba75decdda50fe1132c5ae.bindTooltip(
+                `<div>
+                     Spring Valley Growers, LLC
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_218eef4361ba75decdda50fe1132c5ae.setIcon(icon_a30a37996478475824d00845fce804a8);
+            
+    
+            var marker_c9f7774f7847204f0b9f1793cba70b33 = L.marker(
+                [41.824483, -86.381385],
+                {
+  "opacity": 0.6,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_22cc04165d61656f8abd693e55d56edd = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "lightgray",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6fc5323894c4c2f13bce726624bf1d0c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_985e1306b09caaf6454e3444656c15f1 = $(`<div id="html_985e1306b09caaf6454e3444656c15f1" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #BDBDBD; padding-left: 8px; margin-bottom: 10px;'><b>Aloft Process, Inc</b><br><i>AU - Grower (Class A)</i><br><span style='color: #F44336;'>Status: License Void</span><br>317 Post RD, Buchanan MI 49107<br>Expires: 08/01/2023<br></div></div></div>`)[0];
+                popup_6fc5323894c4c2f13bce726624bf1d0c.setContent(html_985e1306b09caaf6454e3444656c15f1);
+            
+        
+
+        marker_c9f7774f7847204f0b9f1793cba70b33.bindPopup(popup_6fc5323894c4c2f13bce726624bf1d0c)
+        ;
+
+        
+    
+    
+            marker_c9f7774f7847204f0b9f1793cba70b33.bindTooltip(
+                `<div>
+                     Aloft Process, Inc
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_c9f7774f7847204f0b9f1793cba70b33.setIcon(icon_22cc04165d61656f8abd693e55d56edd);
+            
+    
+            var marker_186f0dc026ba1dfcceacf8a51eb987f5 = L.marker(
+                [42.285637, -85.574976],
+                {
+  "opacity": 0.6,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_c09110292547a8d476dda8536a5d5795 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "lightgray",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_746d707ece5db095f0f3f504c8f96768 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c95ba9915d758237118f166f953d6614 = $(`<div id="html_c95ba9915d758237118f166f953d6614" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #BDBDBD; padding-left: 8px; margin-bottom: 10px;'><b>Urban Gardens</b><br><i>AU - Grower (Class A)</i><br><span style='color: #F44336;'>Status: License Void</span><br>617 Portage ST, Kalamazoo MI 49007<br>Expires: 02/19/2025<br></div></div></div>`)[0];
+                popup_746d707ece5db095f0f3f504c8f96768.setContent(html_c95ba9915d758237118f166f953d6614);
+            
+        
+
+        marker_186f0dc026ba1dfcceacf8a51eb987f5.bindPopup(popup_746d707ece5db095f0f3f504c8f96768)
+        ;
+
+        
+    
+    
+            marker_186f0dc026ba1dfcceacf8a51eb987f5.bindTooltip(
+                `<div>
+                     Urban Gardens
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_186f0dc026ba1dfcceacf8a51eb987f5.setIcon(icon_c09110292547a8d476dda8536a5d5795);
+            
+    
+            var marker_ddfaa8a3e6627fa7bd086410d5ea494e = L.marker(
+                [42.233428, -84.315125],
+                {
+  "opacity": 0.6,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_7a3c379c2ffd4ec35c93f91f2650c529 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "lightgray",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_427e618e4f83296b27a726cda0425623 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ff6992bedd7b143bff234ba9126a9d8e = $(`<div id="html_ff6992bedd7b143bff234ba9126a9d8e" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #BDBDBD; padding-left: 8px; margin-bottom: 10px;'><b>Family Trees, LLC</b><br><i>AU - Grower (Class A)</i><br><span style='color: #F44336;'>Status: License Void</span><br>4975 Page AVE, Michigan Center MI 49254<br>Expires: 07/27/2023<br></div></div></div>`)[0];
+                popup_427e618e4f83296b27a726cda0425623.setContent(html_ff6992bedd7b143bff234ba9126a9d8e);
+            
+        
+
+        marker_ddfaa8a3e6627fa7bd086410d5ea494e.bindPopup(popup_427e618e4f83296b27a726cda0425623)
+        ;
+
+        
+    
+    
+            marker_ddfaa8a3e6627fa7bd086410d5ea494e.bindTooltip(
+                `<div>
+                     Family Trees, LLC
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ddfaa8a3e6627fa7bd086410d5ea494e.setIcon(icon_7a3c379c2ffd4ec35c93f91f2650c529);
+            
+    
+            var marker_4d81581ac1dc9ecd80c134cbb7af0183 = L.marker(
+                [42.225942, -84.346246],
+                {
+  "opacity": 0.6,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_d3ada9b91af15e54b4e4fdabc5bbe3e6 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "lightgray",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_5a6c76e5980901b36cd7c32853f4da97 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_390b21388345d6328b38ff05e8e5460c = $(`<div id="html_390b21388345d6328b38ff05e8e5460c" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #BDBDBD; padding-left: 8px; margin-bottom: 10px;'><b>Smart Decisions, Inc.</b><br><i>AU - Grower (Class A)</i><br><span style='color: #F44336;'>Status: License Void</span><br>1256 Falahee RD, Jackson MI 49203<br>Expires: 05/19/2023<br></div></div></div>`)[0];
+                popup_5a6c76e5980901b36cd7c32853f4da97.setContent(html_390b21388345d6328b38ff05e8e5460c);
+            
+        
+
+        marker_4d81581ac1dc9ecd80c134cbb7af0183.bindPopup(popup_5a6c76e5980901b36cd7c32853f4da97)
+        ;
+
+        
+    
+    
+            marker_4d81581ac1dc9ecd80c134cbb7af0183.bindTooltip(
+                `<div>
+                     Smart Decisions, Inc.
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_4d81581ac1dc9ecd80c134cbb7af0183.setIcon(icon_d3ada9b91af15e54b4e4fdabc5bbe3e6);
+            
+    
+            var marker_09e84a09a2427119dcc487782ca26198 = L.marker(
+                [45.834414, -88.057602],
+                {
+  "opacity": 0.6,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_eaa373bfc96d30801df58212d47995a9 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "lightgray",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_be7e972ea980aeccddadce2cce778d1d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2e5f4cab702272843a6dd16aadcfe5e5 = $(`<div id="html_2e5f4cab702272843a6dd16aadcfe5e5" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #BDBDBD; padding-left: 8px; margin-bottom: 10px;'><b>Source 906</b><br><i>AU - Grower (Class A)</i><br><span style='color: #F44336;'>Status: License Void</span><br>1500 N. Stephenson AVE, Iron Mountain MI 49801<br>Expires: 05/04/2023<br></div></div></div>`)[0];
+                popup_be7e972ea980aeccddadce2cce778d1d.setContent(html_2e5f4cab702272843a6dd16aadcfe5e5);
+            
+        
+
+        marker_09e84a09a2427119dcc487782ca26198.bindPopup(popup_be7e972ea980aeccddadce2cce778d1d)
+        ;
+
+        
+    
+    
+            marker_09e84a09a2427119dcc487782ca26198.bindTooltip(
+                `<div>
+                     Source 906
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_09e84a09a2427119dcc487782ca26198.setIcon(icon_eaa373bfc96d30801df58212d47995a9);
+            
+    
+            var marker_7b1c2174e158d9263dd54fd4ab13d517 = L.marker(
+                [44.633622, -86.234184],
+                {
+  "opacity": 0.6,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_2494a19e41c259233493496c7f587915 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "lightgray",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_2f335648cb12da984a14ccb14cce77c5 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6edc8352b19ead7df9edf79cc3fd5bb2 = $(`<div id="html_6edc8352b19ead7df9edf79cc3fd5bb2" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #BDBDBD; padding-left: 8px; margin-bottom: 10px;'><b>My Peaceable Kingdom LLC</b><br><i>AU - Grower (Class A)</i><br><span style='color: #F44336;'>Status: License Void</span><br>2855 Paul Rose RD, Frankfort MI 49635<br>Expires: 01/27/2024<br><small style='color: #FF9800;'>⚠ City-level location</small><br></div></div></div>`)[0];
+                popup_2f335648cb12da984a14ccb14cce77c5.setContent(html_6edc8352b19ead7df9edf79cc3fd5bb2);
+            
+        
+
+        marker_7b1c2174e158d9263dd54fd4ab13d517.bindPopup(popup_2f335648cb12da984a14ccb14cce77c5)
+        ;
+
+        
+    
+    
+            marker_7b1c2174e158d9263dd54fd4ab13d517.bindTooltip(
+                `<div>
+                     My Peaceable Kingdom LLC
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_7b1c2174e158d9263dd54fd4ab13d517.setIcon(icon_2494a19e41c259233493496c7f587915);
+            
+    
+            var marker_5aa380815d4dc692017adc5374f23c80 = L.marker(
+                [42.478602, -83.081812],
+                {
+  "opacity": 0.6,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_3481df4826160673fbfb4d772705e8ca = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "lightgray",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_956955db9cff7c9ea92a449a42d96649 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_96a91502edc5fe2e6ae01fc39284c2de = $(`<div id="html_96a91502edc5fe2e6ae01fc39284c2de" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #BDBDBD; padding-left: 8px; margin-bottom: 10px;'><b>Epic Roots, LLC</b><br><i>AU - Grower (Class A)</i><br><span style='color: #F44336;'>Status: License Void</span><br>2103 Riggs, Warren MI 48091<br>Expires: 10/19/2022<br></div></div></div>`)[0];
+                popup_956955db9cff7c9ea92a449a42d96649.setContent(html_96a91502edc5fe2e6ae01fc39284c2de);
+            
+        
+
+        marker_5aa380815d4dc692017adc5374f23c80.bindPopup(popup_956955db9cff7c9ea92a449a42d96649)
+        ;
+
+        
+    
+    
+            marker_5aa380815d4dc692017adc5374f23c80.bindTooltip(
+                `<div>
+                     Epic Roots, LLC
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_5aa380815d4dc692017adc5374f23c80.setIcon(icon_3481df4826160673fbfb4d772705e8ca);
+            
+    
+            var marker_5d43b2a29d87a7c814949b3263c8d1ae = L.marker(
+                [42.597959, -82.853734],
+                {
+  "opacity": 0.6,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_842251cd10ebf9ef4e9778d0ab5a2d50 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "lightgray",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_40616beb18bf3b096251580c38796d21 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ad52be7b845c2c9a23d2d22e564369ba = $(`<div id="html_ad52be7b845c2c9a23d2d22e564369ba" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #BDBDBD; padding-left: 8px; margin-bottom: 10px;'><b>Production Dr. Holdings, LLC</b><br><i>AU - Grower (Class A)</i><br><span style='color: #F44336;'>Status: License Void</span><br>41525 Production DR, Harrison Township MI 48045<br>Expires: 08/30/2024<br></div></div></div>`)[0];
+                popup_40616beb18bf3b096251580c38796d21.setContent(html_ad52be7b845c2c9a23d2d22e564369ba);
+            
+        
+
+        marker_5d43b2a29d87a7c814949b3263c8d1ae.bindPopup(popup_40616beb18bf3b096251580c38796d21)
+        ;
+
+        
+    
+    
+            marker_5d43b2a29d87a7c814949b3263c8d1ae.bindTooltip(
+                `<div>
+                     Production Dr. Holdings, LLC
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_5d43b2a29d87a7c814949b3263c8d1ae.setIcon(icon_842251cd10ebf9ef4e9778d0ab5a2d50);
+            
+    
+            var marker_2744b56d4efb40d549b9f0ed00c626da = L.marker(
+                [42.909208, -85.609205],
+                {
+  "opacity": 1.0,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_ecbf9d5897c3f59bdf4734f7a7b7f900 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "darkgreen",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_bab394e1349148fcfc2ce9653e4dee71 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_de85636705b84db3485717818e997766 = $(`<div id="html_de85636705b84db3485717818e997766" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #2D5016; padding-left: 8px; margin-bottom: 10px;'><b>Exclusive Grand Rapids</b><br><i>AU - Grower (Class A)</i><br><span style='color: #4CAF50;'>Status: Active</span><br>2350 29th Street SE, Grand Rapids MI 49508<br>Expires: 08/12/2026<br></div></div></div>`)[0];
+                popup_bab394e1349148fcfc2ce9653e4dee71.setContent(html_de85636705b84db3485717818e997766);
+            
+        
+
+        marker_2744b56d4efb40d549b9f0ed00c626da.bindPopup(popup_bab394e1349148fcfc2ce9653e4dee71)
+        ;
+
+        
+    
+    
+            marker_2744b56d4efb40d549b9f0ed00c626da.bindTooltip(
+                `<div>
+                     Exclusive Grand Rapids
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2744b56d4efb40d549b9f0ed00c626da.setIcon(icon_ecbf9d5897c3f59bdf4734f7a7b7f900);
+            
+    
+            var marker_2717829ff1e56a84010f5a10ab6b82b7 = L.marker(
+                [42.475892, -83.095209],
+                {
+  "opacity": 0.6,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_451ddc59f6148e949f6170d5eaf2af9d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "lightgray",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8e86d1020e2a6d6c9a11701ab90da581 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_09bb62c63372dcff2d387ba24162d58c = $(`<div id="html_09bb62c63372dcff2d387ba24162d58c" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #BDBDBD; padding-left: 8px; margin-bottom: 10px;'><b>Givingtrees</b><br><i>AU - Grower (Class A)</i><br><span style='color: #F44336;'>Status: License Void</span><br>1008 East 10 Mile RD, Hazel Park MI 48030<br>Expires: 03/23/2022<br></div></div></div>`)[0];
+                popup_8e86d1020e2a6d6c9a11701ab90da581.setContent(html_09bb62c63372dcff2d387ba24162d58c);
+            
+        
+
+        marker_2717829ff1e56a84010f5a10ab6b82b7.bindPopup(popup_8e86d1020e2a6d6c9a11701ab90da581)
+        ;
+
+        
+    
+    
+            marker_2717829ff1e56a84010f5a10ab6b82b7.bindTooltip(
+                `<div>
+                     Givingtrees
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2717829ff1e56a84010f5a10ab6b82b7.setIcon(icon_451ddc59f6148e949f6170d5eaf2af9d);
+            
+    
+            var marker_6b3fd9ab661911e9a720ce293b616ae5 = L.marker(
+                [46.249708, -85.92583],
+                {
+  "opacity": 0.6,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_9276141ffe0fd34dabd5b28bd2955de8 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "lightgray",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_b102e67a9c0789c3fbb87f19b8895c25 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_afbfe4eb64a19c8cf862363cf35da5ae = $(`<div id="html_afbfe4eb64a19c8cf862363cf35da5ae" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #BDBDBD; padding-left: 8px; margin-bottom: 10px;'><b>77 North Inc.</b><br><i>AU - Grower (Class A)</i><br><span style='color: #F44336;'>Status: License Void</span><br>4404 N. M-77 HWY, Germfask MI 49836<br>Expires: 02/18/2022<br><small style='color: #FF9800;'>⚠ City-level location</small><br></div></div></div>`)[0];
+                popup_b102e67a9c0789c3fbb87f19b8895c25.setContent(html_afbfe4eb64a19c8cf862363cf35da5ae);
+            
+        
+
+        marker_6b3fd9ab661911e9a720ce293b616ae5.bindPopup(popup_b102e67a9c0789c3fbb87f19b8895c25)
+        ;
+
+        
+    
+    
+            marker_6b3fd9ab661911e9a720ce293b616ae5.bindTooltip(
+                `<div>
+                     77 North Inc.
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_6b3fd9ab661911e9a720ce293b616ae5.setIcon(icon_9276141ffe0fd34dabd5b28bd2955de8);
+            
+    
+            var marker_e07a0e7f5d2b973010819a42de1a738e = L.marker(
+                [42.467944, -83.08466],
+                {
+  "opacity": 1.0,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_4071c42034a0af497f624cd16363da35 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "darkgreen",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ebb5463d09e43185a92b16b2f5ba256f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8515482921f8bcf0c335a8fc84d12960 = $(`<div id="html_8515482921f8bcf0c335a8fc84d12960" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #2D5016; padding-left: 8px; margin-bottom: 10px;'><b>BG Grow, LLC</b><br><i>AU - Grower (Class B)</i><br><span style='color: #4CAF50;'>Status: Active</span><br>23881 Dequindre RD, Hazel Park MI 48030<br>Expires: 12/04/2026<br></div></div></div>`)[0];
+                popup_ebb5463d09e43185a92b16b2f5ba256f.setContent(html_8515482921f8bcf0c335a8fc84d12960);
+            
+        
+
+        marker_e07a0e7f5d2b973010819a42de1a738e.bindPopup(popup_ebb5463d09e43185a92b16b2f5ba256f)
+        ;
+
+        
+    
+    
+            marker_e07a0e7f5d2b973010819a42de1a738e.bindTooltip(
+                `<div>
+                     BG Grow, LLC
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_e07a0e7f5d2b973010819a42de1a738e.setIcon(icon_4071c42034a0af497f624cd16363da35);
+            
+    
+            var marker_7d51b3e6e5e7f49e8c09d0963d90107b = L.marker(
+                [42.325593, -83.331042],
+                {
+  "opacity": 1.0,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_18f505077b10adf35c1baae208959a08 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "darkgreen",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ce7e509d6558f76708617e8260ea83a3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b193005566d47ac51014cfbdb713ea02 = $(`<div id="html_b193005566d47ac51014cfbdb713ea02" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #2D5016; padding-left: 8px; margin-bottom: 10px;'><b>Garden Holdings C, LLC</b><br><i>AU - Grower (Class B)</i><br><span style='color: #4CAF50;'>Status: Active</span><br>32330 Ford RD Suite A, Garden City MI 48135<br>Expires: 10/08/2026<br><small style='color: #FF9800;'>⚠ City-level location</small><br></div></div></div>`)[0];
+                popup_ce7e509d6558f76708617e8260ea83a3.setContent(html_b193005566d47ac51014cfbdb713ea02);
+            
+        
+
+        marker_7d51b3e6e5e7f49e8c09d0963d90107b.bindPopup(popup_ce7e509d6558f76708617e8260ea83a3)
+        ;
+
+        
+    
+    
+            marker_7d51b3e6e5e7f49e8c09d0963d90107b.bindTooltip(
+                `<div>
+                     Garden Holdings C, LLC
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_7d51b3e6e5e7f49e8c09d0963d90107b.setIcon(icon_18f505077b10adf35c1baae208959a08);
+            
+    
+            var marker_4f8fa0eed40f83a443e8790c52755cd7 = L.marker(
+                [42.765674, -84.565933],
+                {
+  "opacity": 1.0,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_3ac0286ab0f0b3153d271a75a602f178 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "darkgreen",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e7b9935eaebf4218c0e18339640b9005 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8084e5707a580afa7bb9e5829a0953b5 = $(`<div id="html_8084e5707a580afa7bb9e5829a0953b5" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #2D5016; padding-left: 8px; margin-bottom: 10px;'><b>Iliad Epic Grow</b><br><i>AU - Grower (Class B)</i><br><span style='color: #4CAF50;'>Status: Active</span><br>921 Terminal RD, Lansing MI 48906<br>Expires: 07/11/2026<br></div></div></div>`)[0];
+                popup_e7b9935eaebf4218c0e18339640b9005.setContent(html_8084e5707a580afa7bb9e5829a0953b5);
+            
+        
+
+        marker_4f8fa0eed40f83a443e8790c52755cd7.bindPopup(popup_e7b9935eaebf4218c0e18339640b9005)
+        ;
+
+        
+    
+    
+            marker_4f8fa0eed40f83a443e8790c52755cd7.bindTooltip(
+                `<div>
+                     Iliad Epic Grow
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_4f8fa0eed40f83a443e8790c52755cd7.setIcon(icon_3ac0286ab0f0b3153d271a75a602f178);
+            
+    
+            var marker_ab19763c53e2d985d94990e50cbe3003 = L.marker(
+                [42.594105, -86.104596],
+                {
+  "opacity": 1.0,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_7ccc0e063a7a276ff49b8ce13f7583be = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "darkgreen",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_015b31bbd676a3dac4151266cf7bff58 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2dd30d0b4f35ec4b1cc0e5272cba4d52 = $(`<div id="html_2dd30d0b4f35ec4b1cc0e5272cba4d52" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #2D5016; padding-left: 8px; margin-bottom: 10px;'><b>420 Satori LLC</b><br><i>AU - Grower (Class B)</i><br><span style='color: #4CAF50;'>Status: Active</span><br>6764 Just Barns DR Unit 15, Fennville MI 49408<br>Expires: 01/13/2026<br><small style='color: #FF9800;'>⚠ City-level location</small><br></div></div></div>`)[0];
+                popup_015b31bbd676a3dac4151266cf7bff58.setContent(html_2dd30d0b4f35ec4b1cc0e5272cba4d52);
+            
+        
+
+        marker_ab19763c53e2d985d94990e50cbe3003.bindPopup(popup_015b31bbd676a3dac4151266cf7bff58)
+        ;
+
+        
+    
+    
+            marker_ab19763c53e2d985d94990e50cbe3003.bindTooltip(
+                `<div>
+                     420 Satori LLC
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ab19763c53e2d985d94990e50cbe3003.setIcon(icon_7ccc0e063a7a276ff49b8ce13f7583be);
+            
+    
+            var marker_edabfc2c89674c65cb4d775ae01cabd9 = L.marker(
+                [45.004757, -84.15197],
+                {
+  "opacity": 1.0,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_0f1b3c442c33d75ec043213f04ccfea8 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "darkgreen",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_927fa92664765ed840f7b66bfaab8f62 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6a692427cea2f360c04c555f46d9b0e0 = $(`<div id="html_6a692427cea2f360c04c555f46d9b0e0" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #2D5016; padding-left: 8px; margin-bottom: 10px;'><b>Natural Tranquilities Springs, LLC</b><br><i>AU - Grower (Class B)</i><br><span style='color: #4CAF50;'>Status: Active</span><br>11025 Elk DR, Atlanta MI 49709<br>Expires: 05/23/2026<br><small style='color: #FF9800;'>⚠ City-level location</small><br></div></div></div>`)[0];
+                popup_927fa92664765ed840f7b66bfaab8f62.setContent(html_6a692427cea2f360c04c555f46d9b0e0);
+            
+        
+
+        marker_edabfc2c89674c65cb4d775ae01cabd9.bindPopup(popup_927fa92664765ed840f7b66bfaab8f62)
+        ;
+
+        
+    
+    
+            marker_edabfc2c89674c65cb4d775ae01cabd9.bindTooltip(
+                `<div>
+                     Natural Tranquilities Springs, LLC
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_edabfc2c89674c65cb4d775ae01cabd9.setIcon(icon_0f1b3c442c33d75ec043213f04ccfea8);
+            
+    
+            var marker_b8200b1b9749d5d4a634e2c114a15c58 = L.marker(
+                [42.0283, -85.839363],
+                {
+  "opacity": 1.0,
+}
+            ).addTo(marker_cluster_6d134cf6ed22710c0eefba7daba7e525);
+        
+    
+            var icon_0c8b652947082e6e7dd5367ba71fb81d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "darkgreen",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_214209c9200d40c3d4d5fe03832b33ce = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f6b9ee9b818c9e31080a0b5d4062f4d2 = $(`<div id="html_f6b9ee9b818c9e31080a0b5d4062f4d2" style="width: 100.0%; height: 100.0%;"><div style='font-family: Arial, sans-serif;'><div style='border-left: 3px solid #2D5016; padding-left: 8px; margin-bottom: 10px;'><b>Brothers Cole, Inc.</b><br><i>AU - Grower (Class B)</i><br><span style='color: #4CAF50;'>Status: Active</span><br>52558 Burlington RD, Marcellus MI 49067<br>Expires: 05/13/2026<br></div></div></div>`)[0];
+                popup_214209c9200d40c3d4d5fe03832b33ce.setContent(html_f6b9ee9b818c9e31080a0b5d4062f4d2);
+            
+        
+
+        marker_b8200b1b9749d5d4a634e2c114a15c58.bindPopup(popup_214209c9200d40c3d4d5fe03832b33ce)
+        ;
+
+        
+    
+    
+            marker_b8200b1b9749d5d4a634e2c114a15c58.bindTooltip(
+                `<div>
+                     Brothers Cole, Inc.
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_b8200b1b9749d5d4a634e2c114a15c58.setIcon(icon_0c8b652947082e6e7dd5367ba71fb81d);
+            
+    
+            marker_cluster_6d134cf6ed22710c0eefba7daba7e525.addTo(feature_group_135f210838d430d7aa41e852bcc84fcf);
+        
+    
+            feature_group_135f210838d430d7aa41e852bcc84fcf.addTo(map_69b9ba6dcc61ac2d950eca4573a7219f);
+        
+    
+            var feature_group_2f057e37aa4219a40389311f1168c7fa = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_cluster_c320780646f1ab961821e373d539a086 = L.markerClusterGroup(
+                {
+  "maxClusterRadius": 50,
+  "spiderfyOnMaxZoom": true,
+  "showCoverageOnHover": false,
+  "zoomToBoundsOnClick": true,
+  "disableClusteringAtZoom": 15,
+}
+            );
+        
+    
+            marker_cluster_c320780646f1ab961821e373d539a086.addTo(feature_group_2f057e37aa4219a40389311f1168c7fa);
+        
+    
+            feature_group_2f057e37aa4219a40389311f1168c7fa.addTo(map_69b9ba6dcc61ac2d950eca4573a7219f);
+        
+    
+            var feature_group_2f7979bab34e690cd0bc673151b8f214 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_cluster_b93e857eb279f40e91a5838657bf978b = L.markerClusterGroup(
+                {
+  "maxClusterRadius": 50,
+  "spiderfyOnMaxZoom": true,
+  "showCoverageOnHover": false,
+  "zoomToBoundsOnClick": true,
+  "disableClusteringAtZoom": 15,
+}
+            );
+        
+    
+            marker_cluster_b93e857eb279f40e91a5838657bf978b.addTo(feature_group_2f7979bab34e690cd0bc673151b8f214);
+        
+    
+            feature_group_2f7979bab34e690cd0bc673151b8f214.addTo(map_69b9ba6dcc61ac2d950eca4573a7219f);
+        
+    
+            var feature_group_2e8533d2f74ad784760ecae28a27c5dd = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_cluster_c70b24632f65f9bb97709e39aa6d4125 = L.markerClusterGroup(
+                {
+  "maxClusterRadius": 50,
+  "spiderfyOnMaxZoom": true,
+  "showCoverageOnHover": false,
+  "zoomToBoundsOnClick": true,
+  "disableClusteringAtZoom": 15,
+}
+            );
+        
+    
+            marker_cluster_c70b24632f65f9bb97709e39aa6d4125.addTo(feature_group_2e8533d2f74ad784760ecae28a27c5dd);
+        
+    
+            feature_group_2e8533d2f74ad784760ecae28a27c5dd.addTo(map_69b9ba6dcc61ac2d950eca4573a7219f);
+        
+    
+            var feature_group_07ca07157577a5f2023078c668e61b73 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_cluster_0f1546572ea617ceed5f66bb44d8c62d = L.markerClusterGroup(
+                {
+  "maxClusterRadius": 50,
+  "spiderfyOnMaxZoom": true,
+  "showCoverageOnHover": false,
+  "zoomToBoundsOnClick": true,
+  "disableClusteringAtZoom": 15,
+}
+            );
+        
+    
+            marker_cluster_0f1546572ea617ceed5f66bb44d8c62d.addTo(feature_group_07ca07157577a5f2023078c668e61b73);
+        
+    
+            feature_group_07ca07157577a5f2023078c668e61b73.addTo(map_69b9ba6dcc61ac2d950eca4573a7219f);
+        
+    
+            var feature_group_64b1ec83cdddce82d1a09f26e062d08c = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_cluster_5b9f3c929fb071d791e0f3c7db44e2f0 = L.markerClusterGroup(
+                {
+  "maxClusterRadius": 50,
+  "spiderfyOnMaxZoom": true,
+  "showCoverageOnHover": false,
+  "zoomToBoundsOnClick": true,
+  "disableClusteringAtZoom": 15,
+}
+            );
+        
+    
+            marker_cluster_5b9f3c929fb071d791e0f3c7db44e2f0.addTo(feature_group_64b1ec83cdddce82d1a09f26e062d08c);
+        
+    
+            feature_group_64b1ec83cdddce82d1a09f26e062d08c.addTo(map_69b9ba6dcc61ac2d950eca4573a7219f);
+        
+    
+            var feature_group_1c4e2b8fae839cc5dadddd10f2d9879c = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_cluster_92a5791b11f140eb9256a939eba5cfbf = L.markerClusterGroup(
+                {
+  "maxClusterRadius": 50,
+  "spiderfyOnMaxZoom": true,
+  "showCoverageOnHover": false,
+  "zoomToBoundsOnClick": true,
+  "disableClusteringAtZoom": 15,
+}
+            );
+        
+    
+            marker_cluster_92a5791b11f140eb9256a939eba5cfbf.addTo(feature_group_1c4e2b8fae839cc5dadddd10f2d9879c);
+        
+    
+            feature_group_1c4e2b8fae839cc5dadddd10f2d9879c.addTo(map_69b9ba6dcc61ac2d950eca4573a7219f);
+        
+    
+            var feature_group_d4e963da435525943d873e428e7dd238 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_cluster_2ecd252d2dddafda630e474a83691bbe = L.markerClusterGroup(
+                {
+  "maxClusterRadius": 50,
+  "spiderfyOnMaxZoom": true,
+  "showCoverageOnHover": false,
+  "zoomToBoundsOnClick": true,
+  "disableClusteringAtZoom": 15,
+}
+            );
+        
+    
+            marker_cluster_2ecd252d2dddafda630e474a83691bbe.addTo(feature_group_d4e963da435525943d873e428e7dd238);
+        
+    
+            feature_group_d4e963da435525943d873e428e7dd238.addTo(map_69b9ba6dcc61ac2d950eca4573a7219f);
+        
+    
+            var layer_control_0fc6e1570aded510029997e3be3ee30e_layers = {
+                base_layers : {
+                    "openstreetmap" : tile_layer_1d4f5f2b77ab2ad20e9d3e5c3fac7cde,
+                },
+                overlays :  {
+                    "Growers (AU)" : feature_group_135f210838d430d7aa41e852bcc84fcf,
+                    "Growers (MED)" : feature_group_2f057e37aa4219a40389311f1168c7fa,
+                    "Processors (AU)" : feature_group_2f7979bab34e690cd0bc673151b8f214,
+                    "Processors (MED)" : feature_group_2e8533d2f74ad784760ecae28a27c5dd,
+                    "Retailers (AU)" : feature_group_07ca07157577a5f2023078c668e61b73,
+                    "Retailers (MED)" : feature_group_64b1ec83cdddce82d1a09f26e062d08c,
+                    "Transporters (AU)" : feature_group_1c4e2b8fae839cc5dadddd10f2d9879c,
+                    "Transporters (MED)" : feature_group_d4e963da435525943d873e428e7dd238,
+                },
+            };
+            let layer_control_0fc6e1570aded510029997e3be3ee30e = L.control.layers(
+                layer_control_0fc6e1570aded510029997e3be3ee30e_layers.base_layers,
+                layer_control_0fc6e1570aded510029997e3be3ee30e_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": false,
+  "autoZIndex": true,
+}
+            ).addTo(map_69b9ba6dcc61ac2d950eca4573a7219f);
+
+        
+</script>
+</html>

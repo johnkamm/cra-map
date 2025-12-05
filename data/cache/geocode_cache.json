@@ -1,0 +1,288 @@
+{
+  "5963 Scholl RD, Mancelona MI 49659": {
+    "latitude": 44.9165826,
+    "longitude": -84.9705551,
+    "status": "success",
+    "precision": "address"
+  },
+  "1012 N Lansing ST, Mt. Pleasant MI 48858": {
+    "latitude": 43.613715,
+    "longitude": -84.773124,
+    "status": "success",
+    "precision": "address"
+  },
+  "3624 Quade HWY, Rogers City MI 49779": {
+    "latitude": 45.421391,
+    "longitude": -83.818185,
+    "status": "success",
+    "precision": "city"
+  },
+  "14111 White Creek AVE NE Suite H, Cedar Springs MI 49319": {
+    "latitude": 43.22336,
+    "longitude": -85.551424,
+    "status": "success",
+    "precision": "city"
+  },
+  "1171 W Frances RD, Mount Morris MI 48458": {
+    "latitude": 43.1341767,
+    "longitude": -83.7010845,
+    "status": "success",
+    "precision": "address"
+  },
+  "520 E Dresden ST, Kalkaska MI 49646": {
+    "latitude": 44.7355403,
+    "longitude": -85.1740468,
+    "status": "success",
+    "precision": "address"
+  },
+  "7503 E Reading RD, Pittsford MI 49271": {
+    "latitude": 41.8622703,
+    "longitude": -84.4768925,
+    "status": "success",
+    "precision": "city"
+  },
+  "21864 W County Line RD, Augusta MI 49012": {
+    "latitude": 42.3364294,
+    "longitude": -85.3522219,
+    "status": "success",
+    "precision": "city"
+  },
+  "3165 Alabaster RD, Tawas City MI 48763": {
+    "latitude": 44.269461,
+    "longitude": -83.514697,
+    "status": "success",
+    "precision": "city"
+  },
+  "8751 N Wise RD, Clare MI 48617": {
+    "latitude": 43.9688673,
+    "longitude": -84.8505091,
+    "status": "success",
+    "precision": "city"
+  },
+  "8310 Hudson RD, Pittsford MI 49271": {
+    "latitude": 41.8652275,
+    "longitude": -84.4891723,
+    "status": "success",
+    "precision": "address"
+  },
+  "74 Arthur ST Bldg B, Manistee MI 49660": {
+    "latitude": 44.3308044,
+    "longitude": -86.0262043,
+    "status": "success",
+    "precision": "city"
+  },
+  "52324 Duncan AVE, HUBBELL MI 49934": {
+    "latitude": 47.1750474,
+    "longitude": -88.4263756,
+    "status": "success",
+    "precision": "address"
+  },
+  "6068 South U.S. 131 HWY, Mancelona MI 49659": {
+    "latitude": 44.902229,
+    "longitude": -85.060885,
+    "status": "success",
+    "precision": "city"
+  },
+  "220 Watts RD, Jackson MI 49201": {
+    "latitude": 42.2554537,
+    "longitude": -84.3558315,
+    "status": "success",
+    "precision": "address"
+  },
+  "3314 Pleasant DR, Osseo MI 49266": {
+    "latitude": 41.885881,
+    "longitude": -84.544117,
+    "status": "success",
+    "precision": "city"
+  },
+  "317 Post RD, Buchanan MI 49107": {
+    "latitude": 41.8244835,
+    "longitude": -86.3813847,
+    "status": "success",
+    "precision": "address"
+  },
+  "617 Portage ST, Kalamazoo MI 49007": {
+    "latitude": 42.2856365,
+    "longitude": -85.5749759,
+    "status": "success",
+    "precision": "address"
+  },
+  "4975 Page AVE, Michigan Center MI 49254": {
+    "latitude": 42.2334278,
+    "longitude": -84.3151246,
+    "status": "success",
+    "precision": "address"
+  },
+  "1256 Falahee RD, Jackson MI 49203": {
+    "latitude": 42.2259424,
+    "longitude": -84.3462464,
+    "status": "success",
+    "precision": "address"
+  },
+  "1500 N. Stephenson AVE, Iron Mountain MI 49801": {
+    "latitude": 45.8344139,
+    "longitude": -88.0576018,
+    "status": "success",
+    "precision": "address"
+  },
+  "2855 Paul Rose RD, Frankfort MI 49635": {
+    "latitude": 44.633622,
+    "longitude": -86.234184,
+    "status": "success",
+    "precision": "city"
+  },
+  "2103 Riggs, Warren MI 48091": {
+    "latitude": 42.4786023,
+    "longitude": -83.0818125,
+    "status": "success",
+    "precision": "address"
+  },
+  "41525 Production DR, Harrison Township MI 48045": {
+    "latitude": 42.5979589,
+    "longitude": -82.8537335,
+    "status": "success",
+    "precision": "address"
+  },
+  "2350 29th Street SE, Grand Rapids MI 49508": {
+    "latitude": 42.9092076,
+    "longitude": -85.6092052,
+    "status": "success",
+    "precision": "address"
+  },
+  "1008 East 10 Mile RD, Hazel Park MI 48030": {
+    "latitude": 42.4758919,
+    "longitude": -83.0952091,
+    "status": "success",
+    "precision": "address"
+  },
+  "4404 N. M-77 HWY, Germfask MI 49836": {
+    "latitude": 46.2497082,
+    "longitude": -85.9258299,
+    "status": "success",
+    "precision": "city"
+  },
+  "39123 Ford RD, Westland MI 48185": {
+    "latitude": 42.3243465,
+    "longitude": -83.39464,
+    "status": "success",
+    "precision": "address"
+  },
+  "32767 Woodward AVE, Royal Oak MI 48073": {
+    "latitude": 42.5305492,
+    "longitude": -83.1981115,
+    "status": "success",
+    "precision": "address"
+  },
+  "7505 E Reading RD, Pittsford MI 49271": {
+    "latitude": 41.8622703,
+    "longitude": -84.4768925,
+    "status": "success",
+    "precision": "city"
+  },
+  "4924 S ML King Jr BLVD, Lansing MI 48910": {
+    "latitude": 42.7338254,
+    "longitude": -84.5546295,
+    "status": "success",
+    "precision": "city"
+  },
+  "255 E Cloverland DR, Ironwood MI 49938": {
+    "status": "out_of_bounds",
+    "precision": "failed"
+  },
+  "2112 INDUSTRIAL DR, NILES MI 49120": {
+    "latitude": 41.8495394,
+    "longitude": -86.2258694,
+    "status": "success",
+    "precision": "address"
+  },
+  "4525 W KL AVE Suite B, Kalamazoo MI 49006": {
+    "latitude": 42.291707,
+    "longitude": -85.5872286,
+    "status": "success",
+    "precision": "city"
+  },
+  "801 Prospect ST, Hartford MI 49057": {
+    "latitude": 42.2067051,
+    "longitude": -86.1666876,
+    "status": "success",
+    "precision": "city"
+  },
+  "303 Carroll ST, Buchanan MI 49107": {
+    "latitude": 41.8205925,
+    "longitude": -86.3521117,
+    "status": "success",
+    "precision": "address"
+  },
+  "919 Michigan ST, Niles MI 49120": {
+    "latitude": 41.8231503,
+    "longitude": -86.2485701,
+    "status": "success",
+    "precision": "address"
+  },
+  "21630 John R RD, Hazel Park MI 48030": {
+    "latitude": 42.4541487,
+    "longitude": -83.1032569,
+    "status": "success",
+    "precision": "address"
+  },
+  "215 S 11th ST, Niles MI 49120": {
+    "latitude": 41.825819,
+    "longitude": -86.246919,
+    "status": "success",
+    "precision": "address"
+  },
+  "20916 Industrial Park DR, Onaway MI 49765": {
+    "latitude": 45.3640655,
+    "longitude": -84.2322911,
+    "status": "success",
+    "precision": "address"
+  },
+  "815 N. Huron River DR, Ypsilanti MI 48197": {
+    "latitude": 42.2534494,
+    "longitude": -83.6206705,
+    "status": "success",
+    "precision": "address"
+  },
+  "23881 Dequindre RD, Hazel Park MI 48030": {
+    "latitude": 42.4679443,
+    "longitude": -83.08466,
+    "status": "success",
+    "precision": "address"
+  },
+  "32330 Ford RD Suite A, Garden City MI 48135": {
+    "latitude": 42.3255929,
+    "longitude": -83.3310422,
+    "status": "success",
+    "precision": "city"
+  },
+  "921 Terminal RD, Lansing MI 48906": {
+    "latitude": 42.7656737,
+    "longitude": -84.5659326,
+    "status": "success",
+    "precision": "address"
+  },
+  "6764 Just Barns DR Unit 15, Fennville MI 49408": {
+    "latitude": 42.5941052,
+    "longitude": -86.1045955,
+    "status": "success",
+    "precision": "city"
+  },
+  "11025 Elk DR, Atlanta MI 49709": {
+    "latitude": 45.0047575,
+    "longitude": -84.1519702,
+    "status": "success",
+    "precision": "city"
+  },
+  "52558 Burlington RD, Marcellus MI 49067": {
+    "latitude": 42.0283,
+    "longitude": -85.8393628,
+    "status": "success",
+    "precision": "address"
+  },
+  "1171 W Frances RD, MT Morris MI 48458": {
+    "latitude": 43.1341767,
+    "longitude": -83.7010845,
+    "status": "success",
+    "precision": "address"
+  }
+}
