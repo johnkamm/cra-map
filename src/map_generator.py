@@ -66,13 +66,38 @@ class MapGenerator:
         return self.map
 
     def _initialize_map(self):
-        """Initialize base Folium map"""
+        """Initialize base Folium map with multiple tile layers"""
+        # Create map with no default tiles
         self.map = folium.Map(
             location=[MAP.CENTER_LAT, MAP.CENTER_LON],
             zoom_start=MAP.ZOOM_START,
-            tiles=MAP.TILES
+            tiles=None
         )
-        logger.info("Initialized base map")
+
+        # Add base map tile layers
+        folium.TileLayer(
+            tiles='CartoDB positron',
+            name='Street Map (Light)',
+            control=True,
+            overlay=False
+        ).add_to(self.map)
+
+        folium.TileLayer(
+            tiles='OpenStreetMap',
+            name='Street Map (OpenStreetMap)',
+            control=True,
+            overlay=False
+        ).add_to(self.map)
+
+        folium.TileLayer(
+            tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+            attr='Esri',
+            name='Satellite View',
+            control=True,
+            overlay=False
+        ).add_to(self.map)
+
+        logger.info("Initialized base map with multiple tile layers")
 
     def _create_feature_groups(self):
         """Create feature groups for layer control"""
