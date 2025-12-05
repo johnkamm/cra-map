@@ -284,40 +284,59 @@ class MapGenerator:
 
     def _create_popup_html(self, licenses: List[Dict], is_aggregated: bool = False) -> str:
         """Create HTML content for popup"""
+        from collections import defaultdict
+
+        # Group licenses by type
+        license_groups = defaultdict(list)
+        for lic in licenses:
+            # Create a key for grouping: market_type, category, and class
+            license_class = lic['license_class']
+            class_str = f" (Class {license_class})" if license_class and str(license_class) != 'nan' else ""
+            group_key = (lic['market_type'], lic['license_category'], class_str, lic['status'])
+            license_groups[group_key].append(lic)
+
+        # Start HTML
         if is_aggregated:
             html = f"<div style='font-family: Arial, sans-serif;'>"
             html += f"<h4 style='margin: 5px 0;'>{len(licenses)} Licenses at this location</h4>"
         else:
             html = "<div style='font-family: Arial, sans-serif;'>"
 
-        for lic in licenses:
-            category = lic['license_category']
-            market_type = lic['market_type']
-            status = lic['status']
+        # Get business name and address from first license
+        first_license = licenses[0]
+        html += f"<b>{first_license['business_name']}</b><br>"
+        html += f"{first_license['address']}<br>"
+
+        # Show geocoding precision if city-level
+        if first_license['geocode_precision'] == 'city':
+            html += f"<small style='color: #FF9800;'>⚠ Approximate (city-level) location</small><br>"
+
+        html += "<br>"
+
+        # Show grouped license types with counts
+        for (market_type, category, class_str, status), group_licenses in sorted(license_groups.items()):
             is_active = is_active_status(status)
             border_color = get_color(category, market_type, is_active)
+            count = len(group_licenses)
 
-            html += f"<div style='border-left: 3px solid {border_color}; padding-left: 8px; margin-bottom: 10px;'>"
-            html += f"<b>{lic['business_name']}</b><br>"
+            html += f"<div style='border-left: 3px solid {border_color}; padding-left: 8px; margin-bottom: 8px;'>"
 
-            # Show license type
-            license_class = lic['license_class']
-            # Check for None or NaN
-            if license_class and str(license_class) != 'nan':
-                html += f"<i>{market_type} - {category} (Class {license_class})</i><br>"
+            # License type with count
+            if count > 1:
+                html += f"<b>{market_type} - {category}{class_str}</b> ({count} licenses)<br>"
             else:
-                html += f"<i>{market_type} - {category}</i><br>"
+                html += f"<b>{market_type} - {category}{class_str}</b><br>"
 
             # Status with color coding
             status_color = '#4CAF50' if is_active else '#F44336'
             html += f"<span style='color: {status_color};'>Status: {status}</span><br>"
 
-            html += f"{lic['address']}<br>"
-            html += f"Expires: {lic['expiration_date']}<br>"
-
-            # Show geocoding precision if city-level
-            if lic['geocode_precision'] == 'city':
-                html += f"<small style='color: #FF9800;'>⚠ Approximate (city-level) location</small><br>"
+            # Show expiration dates (if multiple, show the range or all unique dates)
+            expiration_dates = sorted(set([lic['expiration_date'] for lic in group_licenses]))
+            if len(expiration_dates) == 1:
+                html += f"Expires: {expiration_dates[0]}<br>"
+            else:
+                html += f"Expires: {', '.join(expiration_dates)}<br>"
 
             html += "</div>"
 
