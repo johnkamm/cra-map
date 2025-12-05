@@ -6,7 +6,10 @@
       "Bash(python consolidate_csv.py:*)",
       "Bash(python geocode_addresses.py:*)",
       "Bash(pip install:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(del \"data\\cache\\geocode_cache.json\")",
+      "Bash(timeout 1 tail:*)",
+      "Bash(git config:*)"
     ],
     "deny": [],
     "ask": []

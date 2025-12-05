@@ -23,6 +23,7 @@ def main():
     parser = argparse.ArgumentParser(description='Geocode cannabis license addresses')
     parser.add_argument('--test', action='store_true', help='Test mode: geocode limited records')
     parser.add_argument('--limit', type=int, default=100, help='Number of records in test mode')
+    parser.add_argument('--google-api-key', type=str, help='Google Maps API key for better accuracy')
     args = parser.parse_args()
 
     print("=== Michigan Cannabis License Map ===")
@@ -48,10 +49,17 @@ def main():
             print("This is recommended before running full geocoding\n")
 
         # Initialize geocoder
-        geocoder = GeocodingService()
+        if args.google_api_key:
+            print(f"[INFO] Google Maps API enabled for better accuracy")
+            print(f"[INFO] Hybrid mode: Free Nominatim first, Google for failures")
+            geocoder = GeocodingService(google_api_key=args.google_api_key)
+        else:
+            print(f"[INFO] Using free Nominatim geocoding only")
+            print(f"[INFO] For better accuracy, add --google-api-key YOUR_KEY")
+            geocoder = GeocodingService()
 
         # Geocode addresses
-        print("Starting geocoding process...")
+        print("\nStarting geocoding process...")
         if args.test:
             print(f"Estimated time: {args.limit} seconds (1 req/sec)")
         else:

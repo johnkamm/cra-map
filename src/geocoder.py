@@ -4,7 +4,7 @@ Handles address geocoding with caching, rate limiting, and fallback strategies
 """
 
 import pandas as pd
-from geopy.geocoders import Nominatim
+from geopy.geocoders import Nominatim, GoogleV3, Photon
 from geopy.exc import GeocoderTimedOut, GeocoderServiceError, GeocoderUnavailable
 import time
 import json
@@ -22,19 +22,32 @@ logger = logging.getLogger(__name__)
 class GeocodingService:
     """Geocoding service with caching, rate limiting, and fallback"""
 
-    def __init__(self, cache_file: str = None):
+    def __init__(self, cache_file: str = None, google_api_key: str = None):
         """
         Initialize geocoding service.
 
         Args:
             cache_file: Path to cache file (JSON)
+            google_api_key: Optional Google Maps API key for better accuracy
         """
         self.cache_file = Path(cache_file or GEOCODING.CACHE_FILE)
+
+        # Initialize geocoders
         self.geolocator = Nominatim(user_agent=GEOCODING.USER_AGENT, timeout=GEOCODING.TIMEOUT)
+        self.photon = Photon(user_agent=GEOCODING.USER_AGENT, timeout=GEOCODING.TIMEOUT)
+        logger.info("Multi-service geocoding: Nominatim + Photon")
+
+        # Initialize Google geocoder if API key provided
+        self.google_geocoder = None
+        if google_api_key:
+            self.google_geocoder = GoogleV3(api_key=google_api_key, timeout=GEOCODING.TIMEOUT)
+            logger.info("Google Maps geocoding also enabled (hybrid mode)")
+
         self.cache = self._load_cache()
         self.rate_limit = GEOCODING.RATE_LIMIT
         self.checkpoint_interval = GEOCODING.CHECKPOINT_INTERVAL
         self.requests_count = 0
+        self.google_requests = 0  # Track Google API usage
 
     def _load_cache(self) -> Dict:
         """Load existing geocoding cache from JSON file"""
@@ -109,18 +122,36 @@ class GeocodingService:
         if self.requests_count > 0:
             time.sleep(self.rate_limit)
 
-        # Attempt full address geocoding
+        # Attempt 1: Nominatim (free, OSM-based)
         result = self._geocode_with_retry(f"{address}, Michigan, USA")
 
         if result['status'] == 'success':
             result['precision'] = 'address'
+            result['source'] = 'nominatim'
         else:
-            # Fallback to city-level geocoding
+            # Attempt 2: Photon (free, alternative OSM geocoder)
+            result = self._geocode_with_photon(f"{address}, Michigan, USA")
+            if result['status'] == 'success':
+                result['precision'] = 'address'
+                result['source'] = 'photon'
+                return self._cache_and_return(address, result)
+
+            # Attempt 3: Google Maps API if available (more accurate but paid)
+            if self.google_geocoder:
+                result = self._geocode_with_google(f"{address}, Michigan, USA")
+                if result['status'] == 'success':
+                    result['precision'] = 'address'
+                    result['source'] = 'google'
+                    self.google_requests += 1
+                    return self._cache_and_return(address, result)
+
+            # Final fallback: city-level geocoding with Nominatim
             city = self._extract_city(address)
             if city:
                 result = self._geocode_with_retry(f"{city}, Michigan, USA")
                 if result['status'] == 'success':
                     result['precision'] = 'city'
+                    result['source'] = 'nominatim_city'
                     logger.warning(f"Geocoded to city level: {address} -> {city}")
                 else:
                     result['precision'] = 'failed'
@@ -188,6 +219,86 @@ class GeocodingService:
 
         return {'status': 'failed'}
 
+    def _geocode_with_photon(self, query: str) -> Dict:
+        """
+        Geocode using Photon (alternative OSM geocoder).
+
+        Args:
+            query: Address query to geocode
+
+        Returns:
+            Geocoding result dictionary
+        """
+        try:
+            location = self.photon.geocode(query)
+
+            if location:
+                lat, lon = location.latitude, location.longitude
+
+                # Validate coordinates are in Michigan
+                if self._is_valid_michigan_coords(lat, lon):
+                    logger.info(f"Photon geocoded: {query}")
+                    return {
+                        'latitude': lat,
+                        'longitude': lon,
+                        'status': 'success'
+                    }
+                else:
+                    logger.warning(f"Photon: Coordinates outside Michigan bounds: {query}")
+                    return {'status': 'out_of_bounds'}
+
+            return {'status': 'not_found'}
+
+        except Exception as e:
+            logger.error(f"Photon geocoding error: {query} - {e}")
+            return {'status': 'error', 'message': str(e)}
+
+    def _geocode_with_google(self, query: str) -> Dict:
+        """
+        Geocode using Google Maps API.
+
+        Args:
+            query: Address query to geocode
+
+        Returns:
+            Geocoding result dictionary
+        """
+        try:
+            location = self.google_geocoder.geocode(query)
+
+            if location:
+                lat, lon = location.latitude, location.longitude
+
+                # Validate coordinates are in Michigan
+                if self._is_valid_michigan_coords(lat, lon):
+                    logger.info(f"Google geocoded: {query}")
+                    return {
+                        'latitude': lat,
+                        'longitude': lon,
+                        'status': 'success'
+                    }
+                else:
+                    logger.warning(f"Google: Coordinates outside Michigan bounds: {query}")
+                    return {'status': 'out_of_bounds'}
+
+            return {'status': 'not_found'}
+
+        except Exception as e:
+            logger.error(f"Google geocoding error: {query} - {e}")
+            return {'status': 'error', 'message': str(e)}
+
+    def _cache_and_return(self, address: str, result: Dict) -> Dict:
+        """Cache result and return it"""
+        self.cache[address] = result
+        self.requests_count += 1
+
+        # Periodic checkpoint save
+        if self.requests_count % self.checkpoint_interval == 0:
+            self._save_cache()
+            logger.info(f"Checkpoint: Saved cache after {self.requests_count} requests")
+
+        return result
+
     def geocode_dataframe(self, df: pd.DataFrame, test_mode: bool = False, test_limit: int = 100) -> pd.DataFrame:
         """
         Geocode all addresses in a DataFrame.
@@ -211,6 +322,7 @@ class GeocodingService:
         df['longitude'] = None
         df['geocode_status'] = None
         df['geocode_precision'] = None
+        df['geocode_source'] = None
 
         # Geocode each address
         logger.info(f"Starting geocoding for {len(df)} addresses...")
@@ -229,6 +341,7 @@ class GeocodingService:
 
                 df.at[idx, 'geocode_status'] = result['status']
                 df.at[idx, 'geocode_precision'] = result.get('precision', 'unknown')
+                df.at[idx, 'geocode_source'] = result.get('source', None)
 
                 if result['status'] == 'success':
                     df.at[idx, 'latitude'] = result['latitude']
@@ -260,9 +373,24 @@ class GeocodingService:
         for precision, count in precision_counts.items():
             logger.info(f"  {precision}: {count}")
 
+        # Show source breakdown if available
+        if 'geocode_source' in df.columns:
+            source_counts = df['geocode_source'].value_counts()
+            logger.info("\nGeocoding Sources:")
+            for source, count in source_counts.items():
+                if pd.notna(source):
+                    logger.info(f"  {source}: {count}")
+
         status_counts = df['geocode_status'].value_counts()
         logger.info("\nStatus Distribution:")
         for status, count in status_counts.items():
             logger.info(f"  {status}: {count}")
+
+        # Show Google API usage if enabled
+        if self.google_requests > 0:
+            cost_estimate = (self.google_requests / 1000) * 5
+            logger.info(f"\nGoogle Maps API Usage:")
+            logger.info(f"  Requests: {self.google_requests}")
+            logger.info(f"  Estimated Cost: ${cost_estimate:.2f}")
 
         logger.info("=" * 30 + "\n")

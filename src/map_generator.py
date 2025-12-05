@@ -254,8 +254,10 @@ class MapGenerator:
             html += f"<b>{lic['business_name']}</b><br>"
 
             # Show license type
-            if lic['license_class']:
-                html += f"<i>{market_type} - {category} (Class {lic['license_class']})</i><br>"
+            license_class = lic['license_class']
+            # Check for None or NaN
+            if license_class and str(license_class) != 'nan':
+                html += f"<i>{market_type} - {category} (Class {license_class})</i><br>"
             else:
                 html += f"<i>{market_type} - {category}</i><br>"
 
@@ -268,7 +270,7 @@ class MapGenerator:
 
             # Show geocoding precision if city-level
             if lic['geocode_precision'] == 'city':
-                html += f"<small style='color: #FF9800;'>⚠ City-level location</small><br>"
+                html += f"<small style='color: #FF9800;'>⚠ Approximate (city-level) location</small><br>"
 
             html += "</div>"
 
@@ -303,7 +305,7 @@ class MapGenerator:
         """Add custom HTML legend to map"""
         legend_html = '''
         <div style="position: fixed;
-                    top: 10px; right: 10px; width: 250px;
+                    bottom: 30px; right: 10px; width: 250px;
                     background-color: white; border: 2px solid grey;
                     z-index: 9999; font-size: 13px; padding: 10px;
                     font-family: Arial, sans-serif;">
