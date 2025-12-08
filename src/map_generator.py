@@ -71,26 +71,26 @@ class MapGenerator:
 
     def _initialize_map(self):
         """Initialize base Folium map with multiple tile layers"""
-        # Create map with no default tiles first
+        # Create map with no default tiles
         self.map = folium.Map(
             location=[MAP.CENTER_LAT, MAP.CENTER_LON],
             zoom_start=MAP.ZOOM_START,
             tiles=None
         )
 
-        # Add OpenStreetMap first (will be default/selected)
-        folium.TileLayer(
-            tiles='OpenStreetMap',
-            name='OpenStreetMap',
-            control=True,
-            overlay=False
-        ).add_to(self.map)
-
-        # Add satellite view as alternative
+        # Add satellite view first
         folium.TileLayer(
             tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
             attr='Esri',
             name='Satellite View',
+            control=True,
+            overlay=False
+        ).add_to(self.map)
+
+        # Add OpenStreetMap second (will be selected by default as the last base layer)
+        folium.TileLayer(
+            tiles='OpenStreetMap',
+            name='OpenStreetMap',
             control=True,
             overlay=False
         ).add_to(self.map)
