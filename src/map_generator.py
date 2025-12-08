@@ -22,7 +22,8 @@ class MapGenerator:
     def __init__(self):
         """Initialize map generator"""
         self.map = None
-        self.marker_groups = {}
+        self.marker_groups = {}  # MarkerCluster objects for adding markers
+        self.feature_groups = {}  # FeatureGroup objects for layer control
 
     def generate_map(self, df: pd.DataFrame, output_file: str = 'output/michigan_cannabis_map.html') -> folium.Map:
         """
@@ -57,7 +58,10 @@ class MapGenerator:
         # Add custom legend
         self._add_legend()
 
-        # Add layer control
+        # Add custom layer control with dependent filtering
+        self._add_custom_layer_control()
+
+        # Add base layer control (for map tiles only)
         folium.LayerControl(collapsed=False).add_to(self.map)
 
         # Save to file
@@ -67,28 +71,22 @@ class MapGenerator:
 
     def _initialize_map(self):
         """Initialize base Folium map with multiple tile layers"""
-        # Create map with no default tiles
+        # Create map with no default tiles first
         self.map = folium.Map(
             location=[MAP.CENTER_LAT, MAP.CENTER_LON],
             zoom_start=MAP.ZOOM_START,
             tiles=None
         )
 
-        # Add base map tile layers
-        folium.TileLayer(
-            tiles='CartoDB positron',
-            name='Street Map (Light)',
-            control=True,
-            overlay=False
-        ).add_to(self.map)
-
+        # Add OpenStreetMap first (will be default/selected)
         folium.TileLayer(
             tiles='OpenStreetMap',
-            name='Street Map (OpenStreetMap)',
+            name='OpenStreetMap',
             control=True,
             overlay=False
         ).add_to(self.map)
 
+        # Add satellite view as alternative
         folium.TileLayer(
             tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
             attr='Esri',
@@ -97,11 +95,11 @@ class MapGenerator:
             overlay=False
         ).add_to(self.map)
 
-        logger.info("Initialized base map with multiple tile layers")
+        logger.info("Initialized base map with OpenStreetMap default and Satellite view")
 
     def _create_feature_groups(self):
         """Create feature groups for layer control"""
-        # Create groups for each license type
+        # Create groups for each license type and status combination
         categories = [
             ('Grower', 'AU'),
             ('Grower', 'MED'),
@@ -113,14 +111,15 @@ class MapGenerator:
             ('Transporter', 'MED')
         ]
 
+        # Create Active groups first (will appear at top alphabetically)
         for category, market_type in categories:
-            key = f"{category}_{market_type}"
-            group_name = f"{category}s ({market_type})"
+            key_active = f"{category}_{market_type}_active"
+            group_name_active = f"Active - {category}s ({market_type})"
 
-            # Create feature group with marker cluster
-            fg = folium.FeatureGroup(name=group_name, show=True)
-            marker_cluster = MarkerCluster(
-                name=f'{group_name} Cluster',
+            # Create active feature group with marker cluster
+            fg_active = folium.FeatureGroup(name=group_name_active, show=True)
+            marker_cluster_active = MarkerCluster(
+                name=f'{group_name_active} Cluster',
                 options={
                     'maxClusterRadius': MAP.MAX_CLUSTER_RADIUS,
                     'spiderfyOnMaxZoom': True,
@@ -129,26 +128,32 @@ class MapGenerator:
                     'disableClusteringAtZoom': MAP.DISABLE_CLUSTERING_AT_ZOOM
                 }
             )
-            marker_cluster.add_to(fg)
+            marker_cluster_active.add_to(fg_active)
+            self.marker_groups[key_active] = marker_cluster_active  # For adding markers
+            self.feature_groups[group_name_active] = fg_active  # For layer control
+            fg_active.add_to(self.map)
 
-            self.marker_groups[key] = marker_cluster
-            fg.add_to(self.map)
+        # Create Inactive groups
+        for category, market_type in categories:
+            key_inactive = f"{category}_{market_type}_inactive"
+            group_name_inactive = f"Inactive - {category}s ({market_type})"
 
-        # Create inactive licenses layer
-        inactive_fg = folium.FeatureGroup(name="Inactive Licenses (All Types)", show=True)
-        inactive_cluster = MarkerCluster(
-            name='Inactive Licenses Cluster',
-            options={
-                'maxClusterRadius': MAP.MAX_CLUSTER_RADIUS,
-                'spiderfyOnMaxZoom': True,
-                'showCoverageOnHover': False,
-                'zoomToBoundsOnClick': True,
-                'disableClusteringAtZoom': MAP.DISABLE_CLUSTERING_AT_ZOOM
-            }
-        )
-        inactive_cluster.add_to(inactive_fg)
-        self.marker_groups['inactive'] = inactive_cluster
-        inactive_fg.add_to(self.map)
+            # Create inactive feature group with marker cluster
+            fg_inactive = folium.FeatureGroup(name=group_name_inactive, show=True)
+            marker_cluster_inactive = MarkerCluster(
+                name=f'{group_name_inactive} Cluster',
+                options={
+                    'maxClusterRadius': MAP.MAX_CLUSTER_RADIUS,
+                    'spiderfyOnMaxZoom': True,
+                    'showCoverageOnHover': False,
+                    'zoomToBoundsOnClick': True,
+                    'disableClusteringAtZoom': MAP.DISABLE_CLUSTERING_AT_ZOOM
+                }
+            )
+            marker_cluster_inactive.add_to(fg_inactive)
+            self.marker_groups[key_inactive] = marker_cluster_inactive  # For adding markers
+            self.feature_groups[group_name_inactive] = fg_inactive  # For layer control
+            fg_inactive.add_to(self.map)
 
         logger.info(f"Created {len(self.marker_groups)} feature groups with clustering")
 
@@ -238,13 +243,11 @@ class MapGenerator:
             opacity=opacity
         )
 
-        # Add to appropriate feature group (inactive or category-specific)
-        if not is_active:
-            marker.add_to(self.marker_groups['inactive'])
-        else:
-            group_key = f"{category}_{market_type}"
-            if group_key in self.marker_groups:
-                marker.add_to(self.marker_groups[group_key])
+        # Add to appropriate feature group based on active/inactive status
+        status_suffix = 'active' if is_active else 'inactive'
+        group_key = f"{category}_{market_type}_{status_suffix}"
+        if group_key in self.marker_groups:
+            marker.add_to(self.marker_groups[group_key])
 
     def _create_aggregated_marker(self, lat: float, lon: float, licenses: List[Dict], primary: Dict):
         """Create marker for multiple licenses at same location"""
@@ -274,13 +277,11 @@ class MapGenerator:
             opacity=opacity
         )
 
-        # Add to appropriate feature group (inactive or category-specific)
-        if not is_active:
-            marker.add_to(self.marker_groups['inactive'])
-        else:
-            group_key = f"{category}_{market_type}"
-            if group_key in self.marker_groups:
-                marker.add_to(self.marker_groups[group_key])
+        # Add to appropriate feature group based on active/inactive status
+        status_suffix = 'active' if is_active else 'inactive'
+        group_key = f"{category}_{market_type}_{status_suffix}"
+        if group_key in self.marker_groups:
+            marker.add_to(self.marker_groups[group_key])
 
     def _create_popup_html(self, licenses: List[Dict], is_aggregated: bool = False) -> str:
         """Create HTML content for popup"""
@@ -392,12 +393,193 @@ class MapGenerator:
             <hr style="margin: 8px 0;">
             <p style="margin: 3px 0;"><i class="fa fa-circle" style="color:#BDBDBD"></i> Inactive/Closed</p>
             <p style="margin: 8px 0 0 0; font-size: 11px; color: #666;">
-                Use layer control (top right) to filter license types
+                Use Filter Licenses panel (top right) to toggle Active/Inactive status and license types
             </p>
         </div>
         '''
         self.map.get_root().html.add_child(folium.Element(legend_html))
         logger.info("Added custom legend")
+
+    def _add_custom_layer_control(self):
+        """Add custom layer control with dependent Active/Inactive filtering"""
+        custom_control_html = '''
+        <style>
+            /* Hide the overlays section of the default layer control immediately */
+            .leaflet-control-layers-overlays {
+                display: none !important;
+            }
+
+            /* Add black border/outline to inactive (lightgray) markers for better visibility */
+            .awesome-marker-icon-lightgray i {
+                text-shadow:
+                    -1.5px -1.5px 0 #000,
+                    1.5px -1.5px 0 #000,
+                    -1.5px 1.5px 0 #000,
+                    1.5px 1.5px 0 #000,
+                    0 -1.5px 0 #000,
+                    0 1.5px 0 #000,
+                    -1.5px 0 0 #000,
+                    1.5px 0 0 #000;
+            }
+
+            /* Also add a drop shadow to the marker pin itself */
+            .awesome-marker-icon-lightgray {
+                filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.9));
+            }
+        </style>
+
+        <div id="custom-layer-control" style="position: fixed;
+                    top: 80px; right: 10px; width: 220px;
+                    background-color: white; border: 2px solid rgba(0,0,0,0.2);
+                    border-radius: 4px;
+                    z-index: 1000; font-size: 13px; padding: 10px;
+                    font-family: Arial, sans-serif;
+                    box-shadow: 0 1px 5px rgba(0,0,0,0.4);">
+            <div style="margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #ccc;">
+                <b>Filter Licenses</b>
+            </div>
+
+            <!-- Active/Inactive filters -->
+            <div style="margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #eee;">
+                <label style="display: inline-block; margin-right: 10px; cursor: pointer;">
+                    <input type="checkbox" id="filter-active" checked style="cursor: pointer;"> Active
+                </label>
+                <label style="display: inline-block; cursor: pointer;">
+                    <input type="checkbox" id="filter-inactive" checked style="cursor: pointer;"> Inactive
+                </label>
+            </div>
+
+            <!-- License type filters -->
+            <div>
+                <label style="display: block; margin: 5px 0; cursor: pointer;">
+                    <input type="checkbox" class="license-type" data-category="Grower" data-market="AU" checked style="cursor: pointer;"> Growers (AU)
+                </label>
+                <label style="display: block; margin: 5px 0; cursor: pointer;">
+                    <input type="checkbox" class="license-type" data-category="Grower" data-market="MED" checked style="cursor: pointer;"> Growers (MED)
+                </label>
+                <label style="display: block; margin: 5px 0; cursor: pointer;">
+                    <input type="checkbox" class="license-type" data-category="Processor" data-market="AU" checked style="cursor: pointer;"> Processors (AU)
+                </label>
+                <label style="display: block; margin: 5px 0; cursor: pointer;">
+                    <input type="checkbox" class="license-type" data-category="Processor" data-market="MED" checked style="cursor: pointer;"> Processors (MED)
+                </label>
+                <label style="display: block; margin: 5px 0; cursor: pointer;">
+                    <input type="checkbox" class="license-type" data-category="Retailer" data-market="AU" checked style="cursor: pointer;"> Retailers (AU)
+                </label>
+                <label style="display: block; margin: 5px 0; cursor: pointer;">
+                    <input type="checkbox" class="license-type" data-category="Retailer" data-market="MED" checked style="cursor: pointer;"> Retailers (MED)
+                </label>
+                <label style="display: block; margin: 5px 0; cursor: pointer;">
+                    <input type="checkbox" class="license-type" data-category="Transporter" data-market="AU" checked style="cursor: pointer;"> Transporters (AU)
+                </label>
+                <label style="display: block; margin: 5px 0; cursor: pointer;">
+                    <input type="checkbox" class="license-type" data-category="Transporter" data-market="MED" checked style="cursor: pointer;"> Transporters (MED)
+                </label>
+            </div>
+        </div>
+
+        <script>
+        (function() {
+            // Wait for map to be fully loaded
+            var initCustomControl = function() {
+                // Find the map object and layer control
+                var mapObj = null;
+                var layerControlObj = null;
+
+                var mapKeys = Object.keys(window).filter(function(key) {
+                    return key.startsWith('map_') && window[key] && window[key]._layers;
+                });
+
+                if (mapKeys.length === 0) {
+                    setTimeout(initCustomControl, 100);
+                    return;
+                }
+
+                mapObj = window[mapKeys[0]];
+
+                // Find the layer control
+                var layerControlKeys = Object.keys(window).filter(function(key) {
+                    return key.match(/^layer_control_/) && window[key];
+                });
+
+                if (layerControlKeys.length > 0) {
+                    layerControlObj = window[layerControlKeys[0]];
+                }
+
+                // Store all feature groups by name
+                var layerGroups = {};
+
+                // Get layers from layer control's overlays object
+                if (layerControlObj && layerControlObj.overlays) {
+                    Object.keys(layerControlObj.overlays).forEach(function(layerName) {
+                        layerGroups[layerName] = layerControlObj.overlays[layerName];
+                    });
+                }
+
+                console.log('Found layer groups:', Object.keys(layerGroups));
+                console.log('Total layers found:', Object.keys(layerGroups).length);
+
+                // Function to update layer visibility
+                function updateLayers() {
+                    var activeChecked = document.getElementById('filter-active').checked;
+                    var inactiveChecked = document.getElementById('filter-inactive').checked;
+                    var licenseTypes = document.querySelectorAll('.license-type');
+
+                    licenseTypes.forEach(function(checkbox) {
+                        var category = checkbox.getAttribute('data-category');
+                        var market = checkbox.getAttribute('data-market');
+                        var typeChecked = checkbox.checked;
+
+                        var activeLayerName = 'Active - ' + category + 's (' + market + ')';
+                        var inactiveLayerName = 'Inactive - ' + category + 's (' + market + ')';
+
+                        // Control active layer
+                        var activeLayer = layerGroups[activeLayerName];
+                        if (activeLayer) {
+                            if (activeChecked && typeChecked) {
+                                mapObj.addLayer(activeLayer);
+                            } else {
+                                mapObj.removeLayer(activeLayer);
+                            }
+                        }
+
+                        // Control inactive layer
+                        var inactiveLayer = layerGroups[inactiveLayerName];
+                        if (inactiveLayer) {
+                            if (inactiveChecked && typeChecked) {
+                                mapObj.addLayer(inactiveLayer);
+                            } else {
+                                mapObj.removeLayer(inactiveLayer);
+                            }
+                        }
+                    });
+                }
+
+                // Add event listeners
+                document.getElementById('filter-active').addEventListener('change', updateLayers);
+                document.getElementById('filter-inactive').addEventListener('change', updateLayers);
+
+                document.querySelectorAll('.license-type').forEach(function(checkbox) {
+                    checkbox.addEventListener('change', updateLayers);
+                });
+
+                // Initial update to set correct state
+                updateLayers();
+            };
+
+            // Start initialization when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function() {
+                    setTimeout(initCustomControl, 500);
+                });
+            } else {
+                setTimeout(initCustomControl, 500);
+            }
+        })();
+        </script>
+        '''
+        self.map.get_root().html.add_child(folium.Element(custom_control_html))
+        logger.info("Added custom layer control with dependent filtering")
 
     def _save_map(self, output_file: str):
         """Save map to HTML file"""
