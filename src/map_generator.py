@@ -70,6 +70,9 @@ class MapGenerator:
         # Add footer
         self._add_footer()
 
+        # Add favicon
+        self._add_favicon()
+
         # Save to file
         self._save_map(output_file)
 
@@ -849,6 +852,22 @@ class MapGenerator:
         '''
         self.map.get_root().html.add_child(folium.Element(footer_html))
         logger.info("Added footer")
+
+    def _add_favicon(self):
+        """Add favicon to the map HTML as embedded base64 data URI"""
+        import base64
+        from pathlib import Path
+
+        # Read and encode favicon as base64
+        favicon_path = Path('favicon.jpg')
+        if favicon_path.exists():
+            with open(favicon_path, 'rb') as f:
+                favicon_data = base64.b64encode(f.read()).decode('utf-8')
+            favicon_html = f'<link rel="icon" type="image/jpeg" href="data:image/jpeg;base64,{favicon_data}">'
+            self.map.get_root().header.add_child(folium.Element(favicon_html))
+            logger.info("Added favicon (embedded as base64)")
+        else:
+            logger.warning("Favicon file not found, skipping")
 
     def _save_map(self, output_file: str):
         """Save map to HTML file"""
