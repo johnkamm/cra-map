@@ -10,14 +10,15 @@ from typing import Dict, Tuple
 @dataclass
 class ColorScheme:
     """Color definitions for license types (Hex colors for Folium)"""
+    # Combined colors for AU and MED (using darker/primary color for each category)
     GROWER_AU: str = '#2D5016'
-    GROWER_MED: str = '#7CB342'
+    GROWER_MED: str = '#2D5016'  # Same as AU
     PROCESSOR_AU: str = '#1565C0'
-    PROCESSOR_MED: str = '#42A5F5'
+    PROCESSOR_MED: str = '#1565C0'  # Same as AU
     RETAILER_AU: str = '#6A1B9A'
-    RETAILER_MED: str = '#AB47BC'
+    RETAILER_MED: str = '#6A1B9A'  # Same as AU
     TRANSPORTER_AU: str = '#E65100'
-    TRANSPORTER_MED: str = '#FF9800'
+    TRANSPORTER_MED: str = '#E65100'  # Same as AU
     INACTIVE: str = '#BDBDBD'
     LATE_RENEWAL: str = '#FF9800'
 

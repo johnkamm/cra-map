@@ -55,8 +55,8 @@ class MapGenerator:
         # Add markers to map
         self._add_markers(location_data)
 
-        # Add custom legend
-        self._add_legend()
+        # Add custom legend (removed - now using Filter Licenses panel as legend)
+        # self._add_legend()
 
         # Add search control
         self._add_search_control(location_data)
@@ -66,6 +66,9 @@ class MapGenerator:
 
         # Add base layer control (for map tiles only)
         folium.LayerControl(collapsed=False).add_to(self.map)
+
+        # Add footer
+        self._add_footer()
 
         # Save to file
         self._save_map(output_file)
@@ -267,11 +270,25 @@ class MapGenerator:
         # Create aggregated popup
         popup_html = self._create_popup_html(licenses, is_aggregated=True)
 
+        # Create tooltip with unique business names
+        unique_businesses = list(set([
+            str(lic['business_name']) for lic in licenses
+            if lic['business_name'] and pd.notna(lic['business_name'])
+        ]))
+        if len(unique_businesses) == 1:
+            tooltip_text = unique_businesses[0]
+        elif len(unique_businesses) <= 3:
+            tooltip_text = ", ".join(unique_businesses)
+        elif len(unique_businesses) > 0:
+            tooltip_text = f"{unique_businesses[0]} + {len(unique_businesses) - 1} more"
+        else:
+            tooltip_text = f"{len(licenses)} licenses at this location"
+
         # Create marker
         marker = folium.Marker(
             location=[lat, lon],
             popup=folium.Popup(popup_html, max_width=350),
-            tooltip=f"{len(licenses)} licenses at this location",
+            tooltip=tooltip_text,
             icon=folium.Icon(
                 color=self._folium_color_map(color),
                 icon=icon,
@@ -683,32 +700,32 @@ class MapGenerator:
                 </label>
             </div>
 
-            <!-- License type filters -->
+            <!-- License type filters with icons on the right -->
             <div>
-                <label style="display: block; margin: 5px 0; cursor: pointer;">
-                    <input type="checkbox" class="license-type" data-category="Grower" data-market="AU" checked style="cursor: pointer;"> Growers (AU)
+                <label style="display: flex; justify-content: space-between; align-items: center; margin: 5px 0; cursor: pointer;">
+                    <span><input type="checkbox" class="license-type" data-category="Grower" checked style="cursor: pointer; margin-right: 5px;"> Growers</span>
+                    <i class="fa fa-leaf" style="color:#2D5016; font-size: 16px;"></i>
                 </label>
-                <label style="display: block; margin: 5px 0; cursor: pointer;">
-                    <input type="checkbox" class="license-type" data-category="Grower" data-market="MED" checked style="cursor: pointer;"> Growers (MED)
+                <label style="display: flex; justify-content: space-between; align-items: center; margin: 5px 0; cursor: pointer;">
+                    <span><input type="checkbox" class="license-type" data-category="Processor" checked style="cursor: pointer; margin-right: 5px;"> Processors</span>
+                    <i class="fa fa-flask" style="color:#1565C0; font-size: 16px;"></i>
                 </label>
-                <label style="display: block; margin: 5px 0; cursor: pointer;">
-                    <input type="checkbox" class="license-type" data-category="Processor" data-market="AU" checked style="cursor: pointer;"> Processors (AU)
+                <label style="display: flex; justify-content: space-between; align-items: center; margin: 5px 0; cursor: pointer;">
+                    <span><input type="checkbox" class="license-type" data-category="Retailer" checked style="cursor: pointer; margin-right: 5px;"> Retailers</span>
+                    <i class="fa fa-shopping-cart" style="color:#6A1B9A; font-size: 16px;"></i>
                 </label>
-                <label style="display: block; margin: 5px 0; cursor: pointer;">
-                    <input type="checkbox" class="license-type" data-category="Processor" data-market="MED" checked style="cursor: pointer;"> Processors (MED)
+                <label style="display: flex; justify-content: space-between; align-items: center; margin: 5px 0; cursor: pointer;">
+                    <span><input type="checkbox" class="license-type" data-category="Transporter" checked style="cursor: pointer; margin-right: 5px;"> Transporters</span>
+                    <i class="fa fa-truck" style="color:#E65100; font-size: 16px;"></i>
                 </label>
-                <label style="display: block; margin: 5px 0; cursor: pointer;">
-                    <input type="checkbox" class="license-type" data-category="Retailer" data-market="AU" checked style="cursor: pointer;"> Retailers (AU)
-                </label>
-                <label style="display: block; margin: 5px 0; cursor: pointer;">
-                    <input type="checkbox" class="license-type" data-category="Retailer" data-market="MED" checked style="cursor: pointer;"> Retailers (MED)
-                </label>
-                <label style="display: block; margin: 5px 0; cursor: pointer;">
-                    <input type="checkbox" class="license-type" data-category="Transporter" data-market="AU" checked style="cursor: pointer;"> Transporters (AU)
-                </label>
-                <label style="display: block; margin: 5px 0; cursor: pointer;">
-                    <input type="checkbox" class="license-type" data-category="Transporter" data-market="MED" checked style="cursor: pointer;"> Transporters (MED)
-                </label>
+            </div>
+
+            <!-- Inactive/Closed indicator -->
+            <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid #eee;">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <span style="font-size: 12px; color: #666;">Inactive/Closed</span>
+                    <i class="fa fa-circle" style="color:#BDBDBD; font-size: 12px;"></i>
+                </div>
             </div>
         </div>
 
@@ -761,31 +778,33 @@ class MapGenerator:
 
                     licenseTypes.forEach(function(checkbox) {
                         var category = checkbox.getAttribute('data-category');
-                        var market = checkbox.getAttribute('data-market');
                         var typeChecked = checkbox.checked;
 
-                        var activeLayerName = 'Active - ' + category + 's (' + market + ')';
-                        var inactiveLayerName = 'Inactive - ' + category + 's (' + market + ')';
+                        // Handle both AU and MED market types for this category
+                        ['AU', 'MED'].forEach(function(market) {
+                            var activeLayerName = 'Active - ' + category + 's (' + market + ')';
+                            var inactiveLayerName = 'Inactive - ' + category + 's (' + market + ')';
 
-                        // Control active layer
-                        var activeLayer = layerGroups[activeLayerName];
-                        if (activeLayer) {
-                            if (activeChecked && typeChecked) {
-                                mapObj.addLayer(activeLayer);
-                            } else {
-                                mapObj.removeLayer(activeLayer);
+                            // Control active layer
+                            var activeLayer = layerGroups[activeLayerName];
+                            if (activeLayer) {
+                                if (activeChecked && typeChecked) {
+                                    mapObj.addLayer(activeLayer);
+                                } else {
+                                    mapObj.removeLayer(activeLayer);
+                                }
                             }
-                        }
 
-                        // Control inactive layer
-                        var inactiveLayer = layerGroups[inactiveLayerName];
-                        if (inactiveLayer) {
-                            if (inactiveChecked && typeChecked) {
-                                mapObj.addLayer(inactiveLayer);
-                            } else {
-                                mapObj.removeLayer(inactiveLayer);
+                            // Control inactive layer
+                            var inactiveLayer = layerGroups[inactiveLayerName];
+                            if (inactiveLayer) {
+                                if (inactiveChecked && typeChecked) {
+                                    mapObj.addLayer(inactiveLayer);
+                                } else {
+                                    mapObj.removeLayer(inactiveLayer);
+                                }
                             }
-                        }
+                        });
                     });
                 }
 
@@ -814,6 +833,22 @@ class MapGenerator:
         '''
         self.map.get_root().html.add_child(folium.Element(custom_control_html))
         logger.info("Added custom layer control with dependent filtering")
+
+    def _add_footer(self):
+        """Add footer with attribution and link"""
+        footer_html = '''
+        <div style="position: fixed;
+                    bottom: 10px; left: 50%; transform: translateX(-50%);
+                    background-color: white; border: 1px solid rgba(0,0,0,0.2);
+                    border-radius: 4px;
+                    z-index: 1000; font-size: 12px; padding: 8px 15px;
+                    font-family: Arial, sans-serif;
+                    box-shadow: 0 1px 5px rgba(0,0,0,0.2);">
+            Map developed by Southpaw Strategies. <a href="https://spstrat.com/#" target="_blank" style="color: #0066cc; text-decoration: none; font-weight: bold;">Find out</a> how you can receive biomass and flower at 40% off current wholesale pricing.
+        </div>
+        '''
+        self.map.get_root().html.add_child(folium.Element(footer_html))
+        logger.info("Added footer")
 
     def _save_map(self, output_file: str):
         """Save map to HTML file"""
