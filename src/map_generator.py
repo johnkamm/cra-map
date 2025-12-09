@@ -58,6 +58,9 @@ class MapGenerator:
         # Add custom legend
         self._add_legend()
 
+        # Add search control
+        self._add_search_control(location_data)
+
         # Add custom layer control with dependent filtering
         self._add_custom_layer_control()
 
@@ -399,6 +402,237 @@ class MapGenerator:
         '''
         self.map.get_root().html.add_child(folium.Element(legend_html))
         logger.info("Added custom legend")
+
+    def _add_search_control(self, location_data: Dict):
+        """Add search control for finding locations by company name, city, or zip code"""
+        import json
+        import re
+
+        # Build search index with unique locations
+        search_index = []
+        for (lat, lon), licenses in location_data.items():
+            # Get unique company names at this location (filter out None/NaN values)
+            company_names = list(set([
+                str(lic['business_name']) for lic in licenses
+                if lic['business_name'] and pd.notna(lic['business_name'])
+            ]))
+
+            # Extract city and zip from address (assuming format: "address, city state zip")
+            address = licenses[0]['address']
+            city = ""
+            zip_code = ""
+
+            # Try to extract city and zip from address
+            address_parts = address.split(',')
+            if len(address_parts) >= 2:
+                # Last part usually contains "City ST Zip"
+                last_part = address_parts[-1].strip()
+                # Extract zip code (5 digits)
+                zip_match = re.search(r'\b\d{5}\b', last_part)
+                if zip_match:
+                    zip_code = zip_match.group()
+                # Extract city (everything before state abbreviation)
+                city_match = re.search(r'^(.+?)\s+[A-Z]{2}\s+\d{5}', last_part)
+                if city_match:
+                    city = city_match.group(1).strip()
+                else:
+                    # If no state/zip pattern, just take the text before zip
+                    city = last_part.replace(zip_code, '').strip()
+
+            search_index.append({
+                'companies': company_names,
+                'city': city,
+                'zip': zip_code,
+                'address': address,
+                'lat': lat,
+                'lon': lon,
+                'count': len(licenses)
+            })
+
+        # Convert to JSON for JavaScript
+        search_data_json = json.dumps(search_index)
+
+        search_html = f'''
+        <div id="search-control" style="position: fixed;
+                    top: 10px; left: 60px;
+                    background-color: white; border: 2px solid rgba(0,0,0,0.2);
+                    border-radius: 4px;
+                    z-index: 1000; padding: 10px;
+                    font-family: Arial, sans-serif;
+                    box-shadow: 0 1px 5px rgba(0,0,0,0.4);">
+            <div style="display: flex; align-items: center; gap: 5px;">
+                <input type="text" id="search-input" placeholder="Search by company, city, or zip..."
+                    style="width: 250px; padding: 6px; border: 1px solid #ccc; border-radius: 3px; font-size: 13px;">
+                <button id="search-button" style="padding: 6px 12px; background-color: #4CAF50; color: white;
+                    border: none; border-radius: 3px; cursor: pointer; font-size: 13px;">Search</button>
+                <button id="clear-search" style="padding: 6px 12px; background-color: #f44336; color: white;
+                    border: none; border-radius: 3px; cursor: pointer; font-size: 13px;">Clear</button>
+            </div>
+            <div id="search-results" style="margin-top: 8px; font-size: 12px; color: #666; max-height: 200px; overflow-y: auto;"></div>
+        </div>
+
+        <script>
+        (function() {{
+            var searchData = {search_data_json};
+            console.log('Search data loaded:', searchData.length, 'locations');
+
+            function performSearch() {{
+                var query = document.getElementById('search-input').value.toLowerCase().trim();
+                var resultsDiv = document.getElementById('search-results');
+
+                console.log('Search query:', query);
+
+                if (!query) {{
+                    resultsDiv.innerHTML = '<span style="color: #f44336;">Please enter a search term</span>';
+                    return;
+                }}
+
+                // Search through the data
+                var matches = [];
+                searchData.forEach(function(location) {{
+                    var matchFound = false;
+                    var matchType = '';
+
+                    // Search company names
+                    for (var j = 0; j < location.companies.length; j++) {{
+                        var company = location.companies[j];
+                        // Check if company is a valid string before calling toLowerCase
+                        if (company && typeof company === 'string' && company.toLowerCase().includes(query)) {{
+                            matchFound = true;
+                            matchType = 'Company';
+                            break;
+                        }}
+                    }}
+
+                    // Search city
+                    if (location.city && typeof location.city === 'string' && location.city.toLowerCase().includes(query)) {{
+                        matchFound = true;
+                        matchType = 'City';
+                    }}
+
+                    // Search zip
+                    if (location.zip && typeof location.zip === 'string' && location.zip.includes(query)) {{
+                        matchFound = true;
+                        matchType = 'Zip Code';
+                    }}
+
+                    // Search full address as fallback
+                    if (location.address && typeof location.address === 'string' && location.address.toLowerCase().includes(query)) {{
+                        matchFound = true;
+                        matchType = 'Address';
+                    }}
+
+                    if (matchFound) {{
+                        matches.push({{
+                            companies: location.companies,
+                            city: location.city,
+                            zip: location.zip,
+                            address: location.address,
+                            lat: location.lat,
+                            lon: location.lon,
+                            count: location.count,
+                            matchType: matchType
+                        }});
+                    }}
+                }});
+
+                console.log('Found matches:', matches.length);
+
+                // Display results
+                if (matches.length === 0) {{
+                    resultsDiv.innerHTML = '<span style="color: #f44336;">No results found for "' + query + '"</span>';
+                    return;
+                }}
+
+                resultsDiv.innerHTML = '<b>' + matches.length + ' location(s) found</b><br>';
+
+                // Calculate bounds for all matching locations
+                if (matches.length > 0) {{
+                    var bounds = [];
+                    for (var k = 0; k < matches.length; k++) {{
+                        bounds.push([matches[k].lat, matches[k].lon]);
+                    }}
+
+                    // Get map object
+                    var mapKeys = Object.keys(window).filter(function(key) {{
+                        return key.startsWith('map_') && window[key] && window[key].fitBounds;
+                    }});
+
+                    if (mapKeys.length > 0) {{
+                        var mapObj = window[mapKeys[0]];
+
+                        if (bounds.length === 1) {{
+                            // Single result - zoom to location
+                            mapObj.setView([bounds[0][0], bounds[0][1]], 15);
+                        }} else {{
+                            // Multiple results - fit bounds
+                            mapObj.fitBounds(bounds, {{padding: [50, 50]}});
+                        }}
+
+                        // Show result list (limit to first 10)
+                        var displayCount = Math.min(matches.length, 10);
+                        for (var i = 0; i < displayCount; i++) {{
+                            var match = matches[i];
+                            var resultDiv = document.createElement('div');
+                            resultDiv.style.cssText = 'margin: 5px 0; padding: 5px; background: #f5f5f5; border-radius: 3px; cursor: pointer;';
+                            resultDiv.innerHTML = '<b>' + match.companies[0] + '</b><br>' +
+                                                '<small>' + match.city + ' ' + match.zip + ' (' + match.count + ' license' + (match.count > 1 ? 's' : '') + ')</small>';
+
+                            // Add click handler to zoom to this specific location
+                            (function(lat, lon) {{
+                                resultDiv.onclick = function() {{
+                                    console.log('Zooming to:', lat, lon);
+                                    mapObj.setView([lat, lon], 14);
+                                    // Force map to refresh tiles
+                                    setTimeout(function() {{
+                                        mapObj.invalidateSize();
+                                    }}, 100);
+                                }};
+                            }})(match.lat, match.lon);
+
+                            resultsDiv.appendChild(resultDiv);
+                        }}
+
+                        if (matches.length > 10) {{
+                            var moreText = document.createElement('small');
+                            moreText.textContent = '...and ' + (matches.length - 10) + ' more';
+                            resultsDiv.appendChild(moreText);
+                        }}
+                    }}
+                }}
+            }}
+
+            function clearSearch() {{
+                document.getElementById('search-input').value = '';
+                document.getElementById('search-results').innerHTML = '';
+
+                // Reset map view
+                var mapKeys = Object.keys(window).filter(function(key) {{
+                    return key.startsWith('map_') && window[key] && window[key].setView;
+                }});
+
+                if (mapKeys.length > 0) {{
+                    var mapObj = window[mapKeys[0]];
+                    mapObj.setView([{MAP.CENTER_LAT}, {MAP.CENTER_LON}], {MAP.ZOOM_START});
+                }}
+            }}
+
+            // Add event listeners
+            document.getElementById('search-button').addEventListener('click', performSearch);
+            document.getElementById('clear-search').addEventListener('click', clearSearch);
+
+            // Allow Enter key to search
+            document.getElementById('search-input').addEventListener('keypress', function(e) {{
+                if (e.key === 'Enter') {{
+                    performSearch();
+                }}
+            }});
+        }})();
+        </script>
+        '''
+
+        self.map.get_root().html.add_child(folium.Element(search_html))
+        logger.info("Added search control")
 
     def _add_custom_layer_control(self):
         """Add custom layer control with dependent Active/Inactive filtering"""

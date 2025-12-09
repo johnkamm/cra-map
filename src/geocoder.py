@@ -4,7 +4,7 @@ Handles address geocoding with caching, rate limiting, and fallback strategies
 """
 
 import pandas as pd
-from geopy.geocoders import Nominatim, GoogleV3, Photon
+from geopy.geocoders import Nominatim, GoogleV3, Photon, ArcGIS
 from geopy.exc import GeocoderTimedOut, GeocoderServiceError, GeocoderUnavailable
 import time
 import json
@@ -35,7 +35,8 @@ class GeocodingService:
         # Initialize geocoders
         self.geolocator = Nominatim(user_agent=GEOCODING.USER_AGENT, timeout=GEOCODING.TIMEOUT)
         self.photon = Photon(user_agent=GEOCODING.USER_AGENT, timeout=GEOCODING.TIMEOUT)
-        logger.info("Multi-service geocoding: Nominatim + Photon")
+        self.arcgis = ArcGIS(user_agent=GEOCODING.USER_AGENT, timeout=GEOCODING.TIMEOUT)
+        logger.info("Multi-service geocoding: ArcGIS (primary) + Nominatim + Photon (fallbacks)")
 
         # Initialize Google geocoder if API key provided
         self.google_geocoder = None
@@ -122,21 +123,28 @@ class GeocodingService:
         if self.requests_count > 0:
             time.sleep(self.rate_limit)
 
-        # Attempt 1: Nominatim (free, OSM-based)
-        result = self._geocode_with_retry(f"{address}, Michigan, USA")
+        # Attempt 1: ArcGIS (best US coverage and accuracy)
+        result = self._geocode_with_arcgis(f"{address}, Michigan, USA")
 
         if result['status'] == 'success':
             result['precision'] = 'address'
-            result['source'] = 'nominatim'
+            result['source'] = 'arcgis'
         else:
-            # Attempt 2: Photon (free, alternative OSM geocoder)
+            # Attempt 2: Nominatim (free, OSM-based)
+            result = self._geocode_with_retry(f"{address}, Michigan, USA")
+            if result['status'] == 'success':
+                result['precision'] = 'address'
+                result['source'] = 'nominatim'
+                return self._cache_and_return(address, result)
+
+            # Attempt 3: Photon (free, alternative OSM geocoder)
             result = self._geocode_with_photon(f"{address}, Michigan, USA")
             if result['status'] == 'success':
                 result['precision'] = 'address'
                 result['source'] = 'photon'
                 return self._cache_and_return(address, result)
 
-            # Attempt 3: Google Maps API if available (more accurate but paid)
+            # Attempt 4: Google Maps API if available (more accurate but paid)
             if self.google_geocoder:
                 result = self._geocode_with_google(f"{address}, Michigan, USA")
                 if result['status'] == 'success':
@@ -251,6 +259,40 @@ class GeocodingService:
 
         except Exception as e:
             logger.error(f"Photon geocoding error: {query} - {e}")
+            return {'status': 'error', 'message': str(e)}
+
+    def _geocode_with_arcgis(self, query: str) -> Dict:
+        """
+        Geocode using ArcGIS (free tier with good US coverage).
+
+        Args:
+            query: Address query to geocode
+
+        Returns:
+            Geocoding result dictionary
+        """
+        try:
+            location = self.arcgis.geocode(query)
+
+            if location:
+                lat, lon = location.latitude, location.longitude
+
+                # Validate coordinates are in Michigan
+                if self._is_valid_michigan_coords(lat, lon):
+                    logger.info(f"ArcGIS geocoded: {query}")
+                    return {
+                        'latitude': lat,
+                        'longitude': lon,
+                        'status': 'success'
+                    }
+                else:
+                    logger.warning(f"ArcGIS: Coordinates outside Michigan bounds: {query}")
+                    return {'status': 'out_of_bounds'}
+
+            return {'status': 'not_found'}
+
+        except Exception as e:
+            logger.error(f"ArcGIS geocoding error: {query} - {e}")
             return {'status': 'error', 'message': str(e)}
 
     def _geocode_with_google(self, query: str) -> Dict:
