@@ -48,6 +48,9 @@ class MapGenerator:
         # Create feature groups for layer control
         self._create_feature_groups()
 
+        # Load and add For Sale properties
+        self._load_and_add_forsale_properties()
+
         # Aggregate markers by location
         location_data = self._aggregate_by_location(df_geocoded)
         logger.info(f"Aggregated into {len(location_data)} unique locations")
@@ -164,7 +167,74 @@ class MapGenerator:
             self.feature_groups[group_name_inactive] = fg_inactive  # For layer control
             fg_inactive.add_to(self.map)
 
+        # Create For Sale feature group
+        fg_forsale = folium.FeatureGroup(name='Retail - For Sale', show=True)
+        self.marker_groups['forsale'] = fg_forsale  # No clustering for For Sale
+        self.feature_groups['Retail - For Sale'] = fg_forsale
+        fg_forsale.add_to(self.map)
+
         logger.info(f"Created {len(self.marker_groups)} feature groups with clustering")
+
+    def _load_and_add_forsale_properties(self):
+        """Load and add For Sale property markers to map"""
+        from pathlib import Path
+
+        forsale_file = Path('data/processed/forsale_properties.csv')
+        if not forsale_file.exists():
+            logger.warning("For Sale properties file not found, skipping")
+            return
+
+        # Load For Sale properties
+        df_forsale = pd.read_csv(forsale_file)
+        df_forsale = df_forsale[df_forsale['geocode_status'] == 'success']
+
+        logger.info(f"Adding {len(df_forsale)} For Sale properties to map")
+
+        # Add marker for each For Sale property
+        for _, row in df_forsale.iterrows():
+            # Create popup HTML with listing link (bright fluorescent green)
+            popup_html = f'''
+            <div style='font-family: Arial, sans-serif;'>
+                <h4 style='margin: 5px 0; color: #39FF14; text-shadow: 0 0 2px #39FF14;'>For Sale</h4>
+                <b>{row['address']}</b><br>
+                <div style='margin-top: 5px; font-size: 13px;'>
+                    <b>Price:</b> {row['price']}<br>
+                    <b>Size:</b> {row['sq_ft']} sq ft
+                </div>
+                <br>
+                <a href="{row['url']}" target="_blank" style="color: #0066cc; text-decoration: none; font-weight: bold;">View Listing</a>
+            </div>
+            '''
+
+            # Create marker with bright fluorescent green dollar sign icon
+            # Using DivIcon for custom bright green color
+            icon_html = f'''
+            <div style="
+                background-color: #39FF14;
+                border: 2px solid #000;
+                border-radius: 50%;
+                width: 35px;
+                height: 35px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 0 10px #39FF14, 0 3px 10px rgba(0,0,0,0.5);
+            ">
+                <i class="fa fa-dollar-sign" style="color: #000; font-size: 18px; font-weight: bold;"></i>
+            </div>
+            '''
+
+            marker = folium.Marker(
+                location=[row['latitude'], row['longitude']],
+                popup=folium.Popup(popup_html, max_width=300),
+                tooltip=f"For Sale: {row['address']}",
+                icon=folium.DivIcon(html=icon_html)
+            )
+
+            # Add to For Sale feature group
+            marker.add_to(self.marker_groups['forsale'])
+
+        logger.info(f"Added {len(df_forsale)} For Sale markers")
 
     def _aggregate_by_location(self, df: pd.DataFrame) -> Dict:
         """
@@ -723,6 +793,14 @@ class MapGenerator:
                 </label>
             </div>
 
+            <!-- For Sale filter (bright fluorescent green) -->
+            <div style="margin-top: 10px; padding-top: 8px; padding-bottom: 8px; border-top: 1px solid #eee; border-bottom: 1px solid #eee;">
+                <label style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                    <span style="font-weight: bold; color: #39FF14;"><input type="checkbox" id="filter-forsale" checked style="cursor: pointer; margin-right: 5px;"> Retail - For Sale</span>
+                    <i class="fa fa-dollar-sign" style="color: #39FF14; font-size: 18px; text-shadow: 0 0 3px #39FF14;"></i>
+                </label>
+            </div>
+
             <!-- Inactive/Closed indicator -->
             <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid #eee;">
                 <div style="display: flex; align-items: center; justify-content: space-between;">
@@ -811,9 +889,24 @@ class MapGenerator:
                     });
                 }
 
+                // Function to update For Sale layer visibility
+                function updateForSaleLayer() {
+                    var forsaleChecked = document.getElementById('filter-forsale').checked;
+                    var forsaleLayer = layerGroups['Retail - For Sale'];
+
+                    if (forsaleLayer) {
+                        if (forsaleChecked) {
+                            mapObj.addLayer(forsaleLayer);
+                        } else {
+                            mapObj.removeLayer(forsaleLayer);
+                        }
+                    }
+                }
+
                 // Add event listeners
                 document.getElementById('filter-active').addEventListener('change', updateLayers);
                 document.getElementById('filter-inactive').addEventListener('change', updateLayers);
+                document.getElementById('filter-forsale').addEventListener('change', updateForSaleLayer);
 
                 document.querySelectorAll('.license-type').forEach(function(checkbox) {
                     checkbox.addEventListener('change', updateLayers);
@@ -821,6 +914,7 @@ class MapGenerator:
 
                 // Initial update to set correct state
                 updateLayers();
+                updateForSaleLayer();
             };
 
             // Start initialization when DOM is ready

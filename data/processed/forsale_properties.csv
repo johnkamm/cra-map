@@ -1,0 +1,6 @@
+address,url,price,sq_ft,latitude,longitude,geocode_status,geocode_source
+"9017 S Sprinkle Rd, Kalamazoo, MI",https://www.loopnet.com/Listing/9017-S-Sprinkle-Rd-Kalamazoo-MI/37412011/,"$299,000",2005,42.185799750586,-85.540021548765,success,arcgis
+"525 E Kalamazoo Avenue, Kalamazoo, MI 49007",https://www.bhhs.com/rentals/mi/525-e-kalamazoo-avenue-kalamazoo-49007/pid-389202730,"$399,999",2674,42.29499876606,-85.575429473806,success,arcgis
+"2233 N Burdick St, Kalamazoo, MI",https://www.loopnet.com/Listing/2233-N-Burdick-St-Kalamazoo-MI/37221198/,"$585,000",4072,42.312958418537,-85.584509840973,success,arcgis
+"3301 W Michigan Avenue, Battle Creek, MI 49037",https://www.amplifiedre.com/property/15-25056372-3301-w-michigan-avenue-battle-creek-MI-49037,"$475,000",2765,42.358458616006,-85.273985306394,success,arcgis
+"625 North Avenue, Battle Creek, MI 49017",https://www.bhhs.com/rentals/mi/625-north-avenue-battle-creek-49017/pid-416593056,"$500,000",2100,42.34016129856,-85.181731314017,success,arcgis
