@@ -335,7 +335,7 @@ class MapGenerator:
         opacity = get_opacity(is_active)
 
         # Create popup HTML
-        popup_html = self._create_popup_html([license_info])
+        popup_html = self._create_popup_html([license_info], lat=lat, lon=lon)
 
         # Create marker
         marker = folium.Marker(
@@ -369,7 +369,7 @@ class MapGenerator:
         opacity = get_opacity(is_active)
 
         # Create aggregated popup
-        popup_html = self._create_popup_html(licenses, is_aggregated=True)
+        popup_html = self._create_popup_html(licenses, lat=lat, lon=lon, is_aggregated=True)
 
         # Create tooltip with unique business names
         unique_businesses = list(set([
@@ -404,7 +404,7 @@ class MapGenerator:
         if group_key in self.marker_groups:
             marker.add_to(self.marker_groups[group_key])
 
-    def _create_popup_html(self, licenses: List[Dict], is_aggregated: bool = False) -> str:
+    def _create_popup_html(self, licenses: List[Dict], lat: float = None, lon: float = None, is_aggregated: bool = False) -> str:
         """Create HTML content for popup"""
         from collections import defaultdict
 
@@ -466,6 +466,11 @@ class MapGenerator:
                 html += f"Expires: {', '.join(expiration_dates)}<br>"
 
             html += "</div>"
+
+        # Add Google Maps directions link
+        if lat is not None and lon is not None:
+            directions_url = f"https://www.google.com/maps/dir/?api=1&destination={lat},{lon}"
+            html += f"<br><a href='{directions_url}' target='_blank' style='color: #0066cc; text-decoration: none; font-weight: bold;'><i class='fa fa-map-marker-alt'></i> Get Directions</a>"
 
         html += "</div>"
         return html
