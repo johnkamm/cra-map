@@ -4,13 +4,13 @@ Extract and geocode FOR SALE retail properties
 import pandas as pd
 from src.geocoder import GeocodingService
 
-# Extract addresses from the URLs with price and sq ft
+# Original 5 properties with sq_ft data
 forsale_properties = [
     {
         'address': '9017 S Sprinkle Rd, Kalamazoo, MI',
         'url': 'https://www.loopnet.com/Listing/9017-S-Sprinkle-Rd-Kalamazoo-MI/37412011/',
-        'price': '$299,000',  # Add actual price here
-        'sq_ft': '2005'   # Add actual sq ft here
+        'price': '$299,000',
+        'sq_ft': '2005'
     },
     {
         'address': '525 E Kalamazoo Avenue, Kalamazoo, MI 49007',
@@ -37,6 +37,21 @@ forsale_properties = [
         'sq_ft': '2100'
     }
 ]
+
+# Read additional properties from CSV
+df = pd.read_csv('ForSale-25-12-16.csv')
+
+# Add CSV properties to the list
+for _, row in df.iterrows():
+    # Combine Address and City for full address
+    full_address = f"{row['Address']}, {row['City']}, MI"
+
+    forsale_properties.append({
+        'address': full_address,
+        'url': row['Listing URL'],
+        'price': row['Price'],
+        'sq_ft': None  # Not available in CSV
+    })
 
 print("=== Geocoding FOR SALE Properties ===\n")
 
@@ -75,7 +90,8 @@ for prop in forsale_properties:
 # Save to CSV
 df = pd.DataFrame(results)
 output_file = 'data/processed/forsale_properties.csv'
-df.to_csv(output_file, index=False)
+# Replace NaN/None with empty strings in the CSV
+df.to_csv(output_file, index=False, na_rep='')
 
 print(f"\n[SUCCESS] Saved {len(results)} properties to: {output_file}")
 print(f"Success rate: {sum(1 for r in results if r['geocode_status'] == 'success')}/{len(results)}")

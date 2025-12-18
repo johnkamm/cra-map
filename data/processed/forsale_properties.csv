@@ -4,3 +4,52 @@ address,url,price,sq_ft,latitude,longitude,geocode_status,geocode_source
 "2233 N Burdick St, Kalamazoo, MI",https://www.loopnet.com/Listing/2233-N-Burdick-St-Kalamazoo-MI/37221198/,"$585,000",4072,42.312958418537,-85.584509840973,success,arcgis
 "3301 W Michigan Avenue, Battle Creek, MI 49037",https://www.amplifiedre.com/property/15-25056372-3301-w-michigan-avenue-battle-creek-MI-49037,"$475,000",2765,42.358458616006,-85.273985306394,success,arcgis
 "625 North Avenue, Battle Creek, MI 49017",https://www.bhhs.com/rentals/mi/625-north-avenue-battle-creek-49017/pid-416593056,"$500,000",2100,42.34016129856,-85.181731314017,success,arcgis
+"321 East Liberty Street, Ann Arbor, MI",https://www.420property.com/listing/ann-arbor-formerly-operating-provisioning-center/,"$250,000",,42.279688004535,-83.745175871879,success,arcgis
+"1801 N Opdyke, Auburn Hills, MI",https://cannamls.com/properties/catalog/michigan/dispensary/,"$2,495,000",,42.668455970785,-83.246253143645,success,arcgis
+"492 Capital Ave SW, Battle Creek, MI",https://cannamls.com/properties/catalog/michigan/dispensary/,"$185,000",,42.308773250463,-85.196995178795,success,arcgis
+"1200 East Columbia Avenue, Battle Creek, MI",https://www.420property.com/listing/battle-creek-freestanding-retail-cannabis-building/,"$399,999",,42.301095008059,-85.165384004435,success,arcgis
+"846-848 East Columbia Avenue, Battle Creek, MI",https://www.420property.com/listing/battle-creek-dispo-x-fire-creek-provisioning-center/,"$3,999,999",,42.299000999098,-85.173715029458,success,arcgis
+"Confidential, Bay City, MI",https://www.bizbuysell.com/michigan/cannabis-businesses-for-sale/,"$1,500,000",,43.5977841,-83.8845297,success,arcgis
+"Confidential, Bay County, MI",https://www.bizbuysell.com/michigan/cannabis-businesses-for-sale/,"$575,000",,43.721353846672,-83.941736984152,success,arcgis
+"2200 West Eleven Mile Road, Berkley, MI",https://www.420property.com/listing/berkley-butter-provisioning-center-industrial-building/,"$2,500,000",,42.489103694674,-83.179355498021,success,arcgis
+"28557 Woodward Avenue, Berkley, MI",https://www.420property.com/listing/flagship-turnkey-berkley-dispensary-on-woodward-for-sale-lease/,"$2,795,000",,42.498829510295,-83.168396159619,success,arcgis
+"Confidential, Calhoun County, MI",https://www.bizbuysell.com/michigan/cannabis-businesses-for-sale/,"$575,000",,42.246523265937,-85.005577786433,success,arcgis
+"519 Robinson Street, Charlotte, MI",https://www.420property.com/listing/charlotte-freestanding-retail-industrial-building/,"$169,000",,42.566011805351,-84.827758094681,success,arcgis
+"317 South McDonnell Street, Corunna, MI",https://www.420property.com/listing/turn-key-dispensary-in-corunna-mi-2/,"$750,000",,42.977130996518,-84.114905979538,success,arcgis
+"2430 Ludington Street, Escanaba, MI",https://www.420property.com/listing/escanaba-municipal-approved-adult-use-provisioning-center/,"$299,999",,45.745979010009,-87.084686023688,success,arcgis
+"Confidential (Central Area), Flint, MI",https://www.420property.com/listing/skip-the-buy-in-high-profile-fully-built-out-cannabis-retail-storefront-in-michigan-flint-michigan-1918/,"$25,000",,43.00992,-83.685109,success,arcgis
+"3756 South Dort Highway, Flint, MI",https://www.420property.com/listing/flint-freestanding-retail-cannabis-building/,"$299,999",,42.989804056934,-83.654016472238,success,arcgis
+"121-123 South Wisconsin Avenue, Gaylord, MI",https://www.420property.com/listing/gaylord-freestanding-retail-office-buildings/,"$399,999",,45.026642151655,-84.681901160945,success,arcgis
+"1385 West Main Street, Gaylord, MI",https://www.420property.com/listing/gaylord-freestanding-retail-building-redevelopment-site/,"$799,999",,45.026825547696,-84.69981597024,success,arcgis
+"108 U.S. 23, Harrisville, MI",https://www.420property.com/michigan/,"$399,900",,44.657296018981,-83.294655700817,success,arcgis
+"5433 East Michigan Avenue, Jackson, MI",https://cannabisrealestateconsultants.com/listing/5228/,"$379,000",,42.249888033722,-84.321189226732,success,arcgis
+"Confidential (Near I-94), Kalamazoo, MI",https://www.420property.com/listing/no-purchase-price-only-transition-high-profile-turnkey-licensed-cannabis-retail-storefront-opportunity-kalamazoo-michigan-1919/,"$25,000",,42.405375583487,-86.280636226905,success,arcgis
+"335 W Main St, Lowell, MI",https://www.bizbuysell.com/michigan/cannabis-businesses-for-sale/,"$3,350,000",,42.933843015107,-85.341078799602,success,arcgis
+"Confidential, Macomb County, MI",https://cannamls.com/properties/catalog/michigan/dispensary/,"$899,999",,42.672846523633,-82.910127544282,success,arcgis
+"Confidential, Michigan, MI",https://www.bizbuysell.com/michigan/cannabis-businesses-for-sale/,"$18,000,000",,42.980226,-82.422991,success,arcgis
+"1901 South Mission Street, Mount Pleasant, MI",https://www.420property.com/listing/mount-pleasant-turnkey-provisioning-center-retail-building/,"$699,999",,43.583937619619,-84.766530219822,success,arcgis
+"1620 E Apple Ave, Muskegon, MI",https://www.crexi.com/properties/1074531/michigan-high-profile-cannabis-dispensaries,"$1,530,000",,43.234545780921,-86.203407191766,success,arcgis
+"1090 S Getty St, Muskegon, MI",https://www.crexi.com/properties/1074531/michigan-high-profile-cannabis-dispensaries,"$155,000",,43.232471343704,-86.223966240056,success,arcgis
+"1871 Peck Street, Muskegon, MI",https://www.420property.com/listing/muskegon-former-operating-turnkey-provisioning-center/,"$199,999",,43.218411371679,-86.244682616668,success,arcgis
+"43 West Laketon Avenue, Muskegon, MI",https://cannabisrealestateconsultants.com/listing/5078/,"$225,000",,43.219495696584,-86.24534906179,success,arcgis
+"1387 E Laketon Ave, Muskegon, MI",https://www.crexi.com/properties/1074531/michigan-high-profile-cannabis-dispensaries,"$4,203,890",,43.219429018544,-86.209561017439,success,arcgis
+"185 W Laketon Ave, Muskegon, MI",https://www.crexi.com/properties/1074531/michigan-high-profile-cannabis-dispensaries,"$509,748",,43.219460199224,-86.248515074257,success,arcgis
+"1314 E Apple Ave, Muskegon, MI",https://www.crexi.com/properties/1074531/michigan-high-profile-cannabis-dispensaries,"$549,000",,43.234442306326,-86.211476533772,success,arcgis
+"1965 Peck Street, Muskegon, MI",https://www.420property.com/listing/turnkey-muskegon-dispensary-for-sale-lease/,"$649,000",,43.216725309946,-86.244678593355,success,arcgis
+"19169 U.S. 12, New Buffalo, MI",https://www.420property.com/listing/new-buffalo-municipal-state-approved-turnkey-provisioning-center/,"$2,500,000",,41.772447578503,-86.783117301195,success,arcgis
+"3135 South 11th Street, Niles, MI",https://www.420property.com/michigan/niles-real-estate/,Inquire for Price,,41.761927996651,-86.250418185373,success,arcgis
+"155 Holbrook Avenue, Niles (Township), MI",https://www.michigancannabisproperties.com/buy,"$375,000",,43.836233769206,-84.758282978961,success,arcgis
+"Confidential Location, Ottawa County, MI",https://www.420property.com/michigan/,"$2,250,000",,42.948572495169,-86.421943976465,success,arcgis
+"935 West M-36, Pinckney, MI",https://cannabisrealestateconsultants.com/listing/5224/,"$2,950,000",,42.458834924017,-83.95731664447,success,arcgis
+"8991 Hudson Road, Pittsford, MI",https://www.420property.com/listing/turnkey-pittsford-dispensary-ohio-indiana-border-for-sale/,"$499,000",,41.860857588174,-84.477258000745,success,arcgis
+"22 North Saginaw Street, Pontiac, MI",https://www.420property.com/listing/downtown-pontiac-single-tenant-mixed-use-building/,"$450,000",,42.637426877691,-83.291717843754,success,arcgis
+"7812 Portage Road, Portage, MI",https://www.420property.com/listing/portage-freestanding-cannabis-retail-office-building/,"$299,999",,42.203503629287,-85.560314471629,success,arcgis
+"25001 Eight Mile West, Redford, MI",https://cannamls.com/properties/catalog/michigan/dispensary/,"$1,495,000",,42.442278318313,-83.288167353388,success,arcgis
+"24525 Plymouth Road, Redford Township, MI",https://www.420property.com/michigan/redford-township-real-estate/,"$1,800,000",,42.370797322304,-83.280650294982,success,arcgis
+"29765 Groesbeck Highway, Roseville, MI",https://www.420property.com/listing/roseville-municipal-approved-adult-use-provisioning-center/,"$1,900,000",,42.513873936848,-82.954766844844,success,arcgis
+"27877 Groesbeck Highway, Roseville, MI",https://www.420property.com/listing/roseville-dispensary-and-real-estate/,"$2,100,000",,42.499604375334,-82.965880242626,success,arcgis
+"12519 M-140, South Haven, MI",https://www.420property.com/listing/south-haven-municipal-approved-turnkey-adult-use-provisioning-center/,"$999,999",,42.372401995758,-86.268043986646,success,arcgis
+"8201 Inkster Road, Taylor, MI",https://www.420property.com/listing/taylor-municipal-approved-adult-use-provisioning-center/,"$999,999",,42.246707352924,-83.307830711504,success,arcgis
+"Confidential, Warren, MI",https://cannamls.com/properties/catalog/michigan/dispensary/,"$795,000",,42.49044,-83.01304,success,arcgis
+"815 North Huron Street, Ypsilanti, MI",https://www.420property.com/listing/operating-and-profitable-ypsilanti-dispensary-for-sale/,"$1,695,000",,42.253462999246,-83.620667980807,success,arcgis
+"513 West Cross Street, Ypsilanti, MI",https://www.420property.com/listing/cross-street-shop-operating-adult-use-provisioning-center/,"$299,999",,42.245574999715,-83.61969207582,success,arcgis

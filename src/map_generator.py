@@ -192,6 +192,12 @@ class MapGenerator:
 
         # Add marker for each For Sale property
         for _, row in df_forsale.iterrows():
+            # Check if sq_ft is available (not None, not NaN, not empty string)
+            has_sq_ft = row['sq_ft'] and pd.notna(row['sq_ft']) and str(row['sq_ft']).strip() != ''
+
+            # Build size line conditionally
+            size_line = f"<b>Size:</b> {row['sq_ft']} sq ft<br>" if has_sq_ft else ""
+
             # Create popup HTML with listing link (bright fluorescent green)
             popup_html = f'''
             <div style='font-family: Arial, sans-serif;'>
@@ -199,7 +205,7 @@ class MapGenerator:
                 <b>{row['address']}</b><br>
                 <div style='margin-top: 5px; font-size: 13px;'>
                     <b>Price:</b> {row['price']}<br>
-                    <b>Size:</b> {row['sq_ft']} sq ft
+                    {size_line}
                 </div>
                 <br>
                 <a href="{row['url']}" target="_blank" style="color: #0066cc; text-decoration: none; font-weight: bold;">View Listing</a>
@@ -577,53 +583,116 @@ class MapGenerator:
                     return;
                 }}
 
-                // Search through the data
+                // Clear previous highlight when starting new search
+                if (window.currentHighlight) {{
+                    var mapKeys = Object.keys(window).filter(function(key) {{
+                        return key.startsWith('map_') && window[key] && window[key].removeLayer;
+                    }});
+                    if (mapKeys.length > 0) {{
+                        var mapObj = window[mapKeys[0]];
+                        mapObj.removeLayer(window.currentHighlight);
+                        window.currentHighlight = null;
+                    }}
+                }}
+                if (window.highlightTimeout) {{
+                    clearTimeout(window.highlightTimeout);
+                    window.highlightTimeout = null;
+                }}
+
+                // Search through the data with scoring for better ranking
                 var matches = [];
                 searchData.forEach(function(location) {{
                     var matchFound = false;
                     var matchType = '';
+                    var matchScore = 0; // Higher score = better match
+                    var matchedCompany = location.companies[0]; // Default to first company
 
-                    // Search company names
+                    // Search company names with scoring
                     for (var j = 0; j < location.companies.length; j++) {{
                         var company = location.companies[j];
-                        // Check if company is a valid string before calling toLowerCase
-                        if (company && typeof company === 'string' && company.toLowerCase().includes(query)) {{
-                            matchFound = true;
-                            matchType = 'Company';
-                            break;
+                        if (company && typeof company === 'string') {{
+                            var companyLower = company.toLowerCase();
+                            if (companyLower === query) {{
+                                // Exact match - highest priority
+                                matchFound = true;
+                                matchType = 'Company';
+                                matchScore = Math.max(matchScore, 1000);
+                                matchedCompany = company; // Store the matching company
+                            }} else if (companyLower.startsWith(query)) {{
+                                // Starts with - high priority
+                                matchFound = true;
+                                matchType = 'Company';
+                                matchScore = Math.max(matchScore, 500);
+                                matchedCompany = company; // Store the matching company
+                            }} else if (companyLower.includes(query)) {{
+                                // Contains - medium priority
+                                matchFound = true;
+                                matchType = 'Company';
+                                matchScore = Math.max(matchScore, 100);
+                                matchedCompany = company; // Store the matching company
+                            }}
                         }}
                     }}
 
                     // Search city
-                    if (location.city && typeof location.city === 'string' && location.city.toLowerCase().includes(query)) {{
-                        matchFound = true;
-                        matchType = 'City';
+                    if (location.city && typeof location.city === 'string') {{
+                        var cityLower = location.city.toLowerCase();
+                        if (cityLower === query) {{
+                            matchFound = true;
+                            matchType = 'City';
+                            matchScore = Math.max(matchScore, 900);
+                        }} else if (cityLower.startsWith(query)) {{
+                            matchFound = true;
+                            matchType = 'City';
+                            matchScore = Math.max(matchScore, 400);
+                        }} else if (cityLower.includes(query)) {{
+                            matchFound = true;
+                            matchType = 'City';
+                            matchScore = Math.max(matchScore, 50);
+                        }}
                     }}
 
-                    // Search zip
-                    if (location.zip && typeof location.zip === 'string' && location.zip.includes(query)) {{
-                        matchFound = true;
-                        matchType = 'Zip Code';
+                    // Search zip - exact or starts with
+                    if (location.zip && typeof location.zip === 'string') {{
+                        if (location.zip === query) {{
+                            matchFound = true;
+                            matchType = 'Zip Code';
+                            matchScore = Math.max(matchScore, 950);
+                        }} else if (location.zip.startsWith(query)) {{
+                            matchFound = true;
+                            matchType = 'Zip Code';
+                            matchScore = Math.max(matchScore, 450);
+                        }}
                     }}
 
                     // Search full address as fallback
                     if (location.address && typeof location.address === 'string' && location.address.toLowerCase().includes(query)) {{
-                        matchFound = true;
-                        matchType = 'Address';
+                        if (!matchFound) {{
+                            matchFound = true;
+                            matchType = 'Address';
+                            matchScore = 25;
+                        }}
                     }}
 
                     if (matchFound) {{
                         matches.push({{
                             companies: location.companies,
+                            matchedCompany: matchedCompany, // Store the company that matched
                             city: location.city,
                             zip: location.zip,
                             address: location.address,
                             lat: location.lat,
                             lon: location.lon,
                             count: location.count,
-                            matchType: matchType
+                            matchType: matchType,
+                            score: matchScore
                         }});
                     }}
+                }});
+
+                // Sort matches by score (highest first)
+                matches.sort(function(a, b) {{
+                    return b.score - a.score;
                 }});
 
                 console.log('Found matches:', matches.length);
@@ -634,67 +703,204 @@ class MapGenerator:
                     return;
                 }}
 
-                resultsDiv.innerHTML = '<b>' + matches.length + ' location(s) found</b><br>';
+                // Store matches globally for pagination
+                window.searchMatches = matches;
+                window.searchCurrentPage = 1;
+                window.searchResultsPerPage = 10;
+
+                displaySearchResults();
+            }}
+
+            function displaySearchResults() {{
+                var matches = window.searchMatches || [];
+                var currentPage = window.searchCurrentPage || 1;
+                var resultsPerPage = window.searchResultsPerPage || 10;
+                var resultsDiv = document.getElementById('search-results');
+
+                if (matches.length === 0) return;
+
+                var totalPages = Math.ceil(matches.length / resultsPerPage);
+                var startIdx = (currentPage - 1) * resultsPerPage;
+                var endIdx = Math.min(startIdx + resultsPerPage, matches.length);
+
+                // Clear previous results
+                resultsDiv.innerHTML = '';
+
+                // Header with count and page info
+                var headerDiv = document.createElement('div');
+                headerDiv.style.cssText = 'margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;';
+
+                var countText = document.createElement('b');
+                countText.textContent = matches.length + ' location(s) found';
+                headerDiv.appendChild(countText);
+
+                if (totalPages > 1) {{
+                    var pageInfo = document.createElement('small');
+                    pageInfo.textContent = 'Page ' + currentPage + ' of ' + totalPages;
+                    headerDiv.appendChild(pageInfo);
+                }}
+
+                resultsDiv.appendChild(headerDiv);
 
                 // Calculate bounds for all matching locations
-                if (matches.length > 0) {{
-                    var bounds = [];
-                    for (var k = 0; k < matches.length; k++) {{
-                        bounds.push([matches[k].lat, matches[k].lon]);
+                var bounds = [];
+                for (var k = 0; k < matches.length; k++) {{
+                    bounds.push([matches[k].lat, matches[k].lon]);
+                }}
+
+                // Get map object
+                var mapKeys = Object.keys(window).filter(function(key) {{
+                    return key.startsWith('map_') && window[key] && window[key].fitBounds;
+                }});
+
+                var mapObj = null;
+                if (mapKeys.length > 0) {{
+                    mapObj = window[mapKeys[0]];
+
+                    if (bounds.length === 1) {{
+                        // Single result - zoom to location
+                        mapObj.setView([bounds[0][0], bounds[0][1]], 15);
+                    }} else {{
+                        // Multiple results - fit bounds
+                        mapObj.fitBounds(bounds, {{padding: [50, 50]}});
                     }}
+                }}
 
-                    // Get map object
-                    var mapKeys = Object.keys(window).filter(function(key) {{
-                        return key.startsWith('map_') && window[key] && window[key].fitBounds;
-                    }});
+                // Track current highlight circle
+                if (typeof window.currentHighlight === 'undefined') {{
+                    window.currentHighlight = null;
+                    window.highlightTimeout = null;
+                }}
 
-                    if (mapKeys.length > 0) {{
-                        var mapObj = window[mapKeys[0]];
-
-                        if (bounds.length === 1) {{
-                            // Single result - zoom to location
-                            mapObj.setView([bounds[0][0], bounds[0][1]], 15);
-                        }} else {{
-                            // Multiple results - fit bounds
-                            mapObj.fitBounds(bounds, {{padding: [50, 50]}});
-                        }}
-
-                        // Show result list (limit to first 10)
-                        var displayCount = Math.min(matches.length, 10);
-                        for (var i = 0; i < displayCount; i++) {{
-                            var match = matches[i];
-                            var resultDiv = document.createElement('div');
-                            resultDiv.style.cssText = 'margin: 5px 0; padding: 5px; background: #f5f5f5; border-radius: 3px; cursor: pointer;';
-                            resultDiv.innerHTML = '<b>' + match.companies[0] + '</b><br>' +
-                                                '<small>' + match.city + ' ' + match.zip + ' (' + match.count + ' license' + (match.count > 1 ? 's' : '') + ')</small>';
-
-                            // Add click handler to zoom to this specific location
-                            (function(lat, lon) {{
-                                resultDiv.onclick = function() {{
-                                    console.log('Zooming to:', lat, lon);
-                                    mapObj.setView([lat, lon], 14);
-                                    // Force map to refresh tiles
-                                    setTimeout(function() {{
-                                        mapObj.invalidateSize();
-                                    }}, 100);
-                                }};
-                            }})(match.lat, match.lon);
-
-                            resultsDiv.appendChild(resultDiv);
-                        }}
-
-                        if (matches.length > 10) {{
-                            var moreText = document.createElement('small');
-                            moreText.textContent = '...and ' + (matches.length - 10) + ' more';
-                            resultsDiv.appendChild(moreText);
-                        }}
+                // Function to clear previous highlight
+                function clearPreviousHighlight() {{
+                    if (window.currentHighlight && mapObj) {{
+                        mapObj.removeLayer(window.currentHighlight);
+                        window.currentHighlight = null;
                     }}
+                    if (window.highlightTimeout) {{
+                        clearTimeout(window.highlightTimeout);
+                        window.highlightTimeout = null;
+                    }}
+                }}
+
+                // Show results for current page
+                for (var i = startIdx; i < endIdx; i++) {{
+                    var match = matches[i];
+                    var resultDiv = document.createElement('div');
+                    resultDiv.style.cssText = 'margin: 5px 0; padding: 5px; background: #f5f5f5; border-radius: 3px; cursor: pointer;';
+                    resultDiv.innerHTML = '<b>' + match.matchedCompany + '</b><br>' +
+                                        '<small>' + match.city + ' ' + match.zip + ' (' + match.count + ' license' + (match.count > 1 ? 's' : '') + ')</small>';
+
+                    // Add click handler to zoom to this specific location
+                    (function(lat, lon) {{
+                        resultDiv.onclick = function() {{
+                            console.log('Zooming to:', lat, lon);
+                            if (mapObj) {{
+                                // Clear any previous highlight
+                                clearPreviousHighlight();
+
+                                // Add yellow halo circle
+                                window.currentHighlight = L.circle([lat, lon], {{
+                                    color: '#FFD700',        // Gold outline
+                                    fill: true,
+                                    fillColor: '#FFFF00',    // Yellow fill
+                                    fillOpacity: 0.3,        // Transparent fill
+                                    weight: 4,               // 4px outline width
+                                    opacity: 0.9,            // Semi-transparent outline
+                                    radius: 50               // 50 meters radius
+                                }}).addTo(mapObj);
+
+                                // Zoom to location (zoom level 15 for closer view)
+                                mapObj.setView([lat, lon], 15);
+
+                                // Fade out and remove after 10 seconds
+                                window.highlightTimeout = setTimeout(function() {{
+                                    if (window.currentHighlight && mapObj) {{
+                                        mapObj.removeLayer(window.currentHighlight);
+                                        window.currentHighlight = null;
+                                    }}
+                                }}, 10000);
+
+                                // Force map to refresh tiles
+                                setTimeout(function() {{
+                                    mapObj.invalidateSize();
+                                }}, 100);
+                            }}
+                        }};
+                    }})(match.lat, match.lon);
+
+                    resultsDiv.appendChild(resultDiv);
+                }}
+
+                // Add pagination controls if needed
+                if (totalPages > 1) {{
+                    var paginationDiv = document.createElement('div');
+                    paginationDiv.style.cssText = 'margin-top: 8px; display: flex; justify-content: center; align-items: center; gap: 10px;';
+
+                    // Previous button
+                    var prevBtn = document.createElement('button');
+                    prevBtn.innerHTML = '&larr;';
+                    prevBtn.style.cssText = 'padding: 4px 8px; background-color: #4CAF50; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 14px;';
+                    prevBtn.disabled = currentPage === 1;
+                    if (currentPage === 1) {{
+                        prevBtn.style.backgroundColor = '#ccc';
+                        prevBtn.style.cursor = 'not-allowed';
+                    }}
+                    prevBtn.onclick = function() {{
+                        if (window.searchCurrentPage > 1) {{
+                            window.searchCurrentPage--;
+                            displaySearchResults();
+                        }}
+                    }};
+                    paginationDiv.appendChild(prevBtn);
+
+                    // Page indicator
+                    var pageText = document.createElement('span');
+                    pageText.style.cssText = 'font-size: 12px;';
+                    pageText.textContent = currentPage + ' / ' + totalPages;
+                    paginationDiv.appendChild(pageText);
+
+                    // Next button
+                    var nextBtn = document.createElement('button');
+                    nextBtn.innerHTML = '&rarr;';
+                    nextBtn.style.cssText = 'padding: 4px 8px; background-color: #4CAF50; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 14px;';
+                    nextBtn.disabled = currentPage === totalPages;
+                    if (currentPage === totalPages) {{
+                        nextBtn.style.backgroundColor = '#ccc';
+                        nextBtn.style.cursor = 'not-allowed';
+                    }}
+                    nextBtn.onclick = function() {{
+                        if (window.searchCurrentPage < totalPages) {{
+                            window.searchCurrentPage++;
+                            displaySearchResults();
+                        }}
+                    }};
+                    paginationDiv.appendChild(nextBtn);
+
+                    resultsDiv.appendChild(paginationDiv);
                 }}
             }}
 
             function clearSearch() {{
                 document.getElementById('search-input').value = '';
                 document.getElementById('search-results').innerHTML = '';
+
+                // Clear highlight
+                if (window.currentHighlight) {{
+                    var mapKeys = Object.keys(window).filter(function(key) {{
+                        return key.startsWith('map_') && window[key] && window[key].removeLayer;
+                    }});
+                    if (mapKeys.length > 0) {{
+                        var mapObj = window[mapKeys[0]];
+                        mapObj.removeLayer(window.currentHighlight);
+                        window.currentHighlight = null;
+                    }}
+                }}
+                if (window.highlightTimeout) {{
+                    clearTimeout(window.highlightTimeout);
+                    window.highlightTimeout = null;
+                }}
 
                 // Reset map view
                 var mapKeys = Object.keys(window).filter(function(key) {{
