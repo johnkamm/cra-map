@@ -285,18 +285,40 @@ class MapGenerator:
         total_markers = 0
 
         for (lat, lon), licenses in location_data.items():
-            # Determine primary license (first active, or first in list)
-            primary = next((lic for lic in licenses if is_active_status(lic['status'])), licenses[0])
+            # Group licenses by (category, market_type) to create separate markers for each type
+            from collections import defaultdict
+            grouped = defaultdict(list)
+            for lic in licenses:
+                key = (lic['license_category'], lic['market_type'])
+                grouped[key].append(lic)
 
-            # Create marker
-            if len(licenses) == 1:
-                # Single license at location
-                self._create_single_marker(lat, lon, licenses[0])
-            else:
-                # Multiple licenses at location - use aggregated popup
-                self._create_aggregated_marker(lat, lon, licenses, primary)
+            # If multiple license types at same location, offset them slightly
+            num_groups = len(grouped)
+            offset_multiplier = 0.00008  # ~9 meters offset
 
-            total_markers += 1
+            for idx, ((category, market_type), group_licenses) in enumerate(grouped.items()):
+                # Calculate offset for this marker
+                if num_groups > 1:
+                    # Offset in a circle pattern around the original point
+                    import math
+                    angle = (2 * math.pi * idx) / num_groups
+                    lat_offset = offset_multiplier * math.cos(angle)
+                    lon_offset = offset_multiplier * math.sin(angle)
+                    marker_lat = lat + lat_offset
+                    marker_lon = lon + lon_offset
+                else:
+                    marker_lat = lat
+                    marker_lon = lon
+
+                # Create marker for this license type
+                if len(group_licenses) == 1:
+                    self._create_single_marker(marker_lat, marker_lon, group_licenses[0])
+                else:
+                    # Multiple licenses of same type at location
+                    primary = next((lic for lic in group_licenses if is_active_status(lic['status'])), group_licenses[0])
+                    self._create_aggregated_marker(marker_lat, marker_lon, group_licenses, primary)
+
+                total_markers += 1
 
         logger.info(f"Added {total_markers} markers to map")
 
