@@ -1240,6 +1240,44 @@ class MapGenerator:
                     box-shadow: 0 1px 5px rgba(0,0,0,0.2);">
             Map by Southpaw Strategies. <a href="https://spstrat.com/#" target="_blank" style="color: #0066cc; text-decoration: none; font-weight: bold;">Wholesale cannabis</a> delivered at 40% off market price.
         </div>
+
+        <!-- Visit Counter -->
+        <div id="visit-counter" style="position: fixed;
+                    bottom: 10px; right: 10px;
+                    background-color: white; border: 1px solid rgba(0,0,0,0.2);
+                    border-radius: 4px;
+                    z-index: 1000; font-size: 11px; padding: 5px 10px;
+                    font-family: Arial, sans-serif;
+                    box-shadow: 0 1px 5px rgba(0,0,0,0.2);
+                    color: #666;">
+            <i class="fa fa-eye" style="margin-right: 5px;"></i>
+            <span id="visit-count">Loading...</span> visits
+        </div>
+
+        <script>
+        (function() {
+            // Visit counter using countapi.xyz
+            var counterKey = 'michigan-cannabis-map';
+            var counterNamespace = 'spstrat';
+
+            // Increment and get count
+            fetch('https://api.countapi.xyz/hit/' + counterNamespace + '/' + counterKey)
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                    if (data && data.value) {
+                        document.getElementById('visit-count').textContent = data.value.toLocaleString();
+                    } else {
+                        document.getElementById('visit-count').textContent = '---';
+                    }
+                })
+                .catch(function(error) {
+                    console.error('Error loading visit counter:', error);
+                    document.getElementById('visit-count').textContent = '---';
+                });
+        })();
+        </script>
         '''
         self.map.get_root().html.add_child(folium.Element(footer_html))
         logger.info("Added footer")
