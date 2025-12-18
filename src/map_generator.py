@@ -994,6 +994,11 @@ class MapGenerator:
                 #custom-layer-control.collapsed #filter-content {
                     display: none;
                 }
+
+                /* Hide the base layer control (satellite view toggle) on smaller screens */
+                .leaflet-control-layers {
+                    display: none !important;
+                }
             }
 
             #custom-layer-control.collapsed #filter-content {
@@ -1261,12 +1266,12 @@ class MapGenerator:
 
         <script>
         (function() {
-            // Visit counter using countapi.xyz
+            // Visit counter using Abacus API (abacus.jasoncameron.dev)
             var counterKey = 'michigan-cannabis-map';
             var counterNamespace = 'spstrat';
 
             // Increment and get count
-            fetch('https://api.countapi.xyz/hit/' + counterNamespace + '/' + counterKey)
+            fetch('https://abacus.jasoncameron.dev/hit/' + counterNamespace + '/' + counterKey)
                 .then(function(response) {
                     return response.json();
                 })
