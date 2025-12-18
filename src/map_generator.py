@@ -958,6 +958,22 @@ class MapGenerator:
             }
         </style>
 
+        <style>
+            /* Responsive styles for Filter Licenses panel */
+            @media (max-width: 768px) {
+                #custom-layer-control {
+                    width: 180px;
+                }
+                #custom-layer-control.collapsed #filter-content {
+                    display: none;
+                }
+            }
+
+            #custom-layer-control.collapsed #filter-content {
+                display: none;
+            }
+        </style>
+
         <div id="custom-layer-control" style="position: fixed;
                     top: 80px; right: 10px; width: 220px;
                     background-color: white; border: 2px solid rgba(0,0,0,0.2);
@@ -965,9 +981,13 @@ class MapGenerator:
                     z-index: 1000; font-size: 13px; padding: 10px;
                     font-family: Arial, sans-serif;
                     box-shadow: 0 1px 5px rgba(0,0,0,0.4);">
-            <div style="margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #ccc;">
+            <div style="margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #ccc; display: flex; justify-content: space-between; align-items: center;">
                 <b>Filter Licenses</b>
+                <button id="toggle-filter-btn" title="Collapse/Expand" style="background: none; border: none; cursor: pointer; padding: 0; font-size: 14px; color: #666;">
+                    <i class="fa fa-chevron-up"></i>
+                </button>
             </div>
+            <div id="filter-content">
 
             <!-- Active/Inactive filters -->
             <div style="margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #eee;">
@@ -1014,10 +1034,59 @@ class MapGenerator:
                     <i class="fa fa-circle" style="color:#BDBDBD; font-size: 12px;"></i>
                 </div>
             </div>
+            </div>
         </div>
 
         <script>
         (function() {
+            // Toggle button functionality
+            var toggleBtn = document.getElementById('toggle-filter-btn');
+            var filterControl = document.getElementById('custom-layer-control');
+            var toggleIcon = toggleBtn.querySelector('i');
+
+            toggleBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                filterControl.classList.toggle('collapsed');
+
+                // Update icon
+                if (filterControl.classList.contains('collapsed')) {
+                    toggleIcon.className = 'fa fa-chevron-down';
+                } else {
+                    toggleIcon.className = 'fa fa-chevron-up';
+                }
+
+                // Mark as manually toggled to prevent auto-collapse from overriding
+                filterControl.setAttribute('data-manual-toggle', 'true');
+            });
+
+            // Auto-collapse on mobile/tablet (< 768px)
+            var handleResponsiveCollapse = function() {
+                var isMobile = window.innerWidth < 768;
+                var isManuallyToggled = filterControl.getAttribute('data-manual-toggle') === 'true';
+
+                // Only auto-collapse/expand if user hasn't manually toggled
+                if (!isManuallyToggled) {
+                    if (isMobile && !filterControl.classList.contains('collapsed')) {
+                        filterControl.classList.add('collapsed');
+                        toggleIcon.className = 'fa fa-chevron-down';
+                    } else if (!isMobile && filterControl.classList.contains('collapsed')) {
+                        filterControl.classList.remove('collapsed');
+                        toggleIcon.className = 'fa fa-chevron-up';
+                    }
+                }
+            };
+
+            // Run on load
+            handleResponsiveCollapse();
+
+            // Run on window resize (debounced)
+            var resizeTimer;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(handleResponsiveCollapse, 250);
+            });
+
             // Wait for map to be fully loaded
             var initCustomControl = function() {
                 // Find the map object and layer control
@@ -1147,7 +1216,7 @@ class MapGenerator:
                     z-index: 1000; font-size: 12px; padding: 8px 15px;
                     font-family: Arial, sans-serif;
                     box-shadow: 0 1px 5px rgba(0,0,0,0.2);">
-            Map developed by Southpaw Strategies. <a href="https://spstrat.com/#" target="_blank" style="color: #0066cc; text-decoration: none; font-weight: bold;">Find out</a> how you can receive biomass and flower at 40% off current wholesale pricing.
+            Map by Southpaw Strategies. <a href="https://spstrat.com/#" target="_blank" style="color: #0066cc; text-decoration: none; font-weight: bold;">Wholesale cannabis</a> delivered at 40% off market price.
         </div>
         '''
         self.map.get_root().html.add_child(folium.Element(footer_html))
