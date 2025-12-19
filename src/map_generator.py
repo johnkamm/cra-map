@@ -9,6 +9,9 @@ from folium.plugins import MarkerCluster
 from collections import defaultdict
 from typing import List, Dict
 import logging
+import json
+import re
+from pathlib import Path
 
 from .config import MAP, get_color, get_icon, is_active_status, get_opacity
 
@@ -562,6 +565,15 @@ class MapGenerator:
                     # If no state/zip pattern, just take the text before zip
                     city = last_part.replace(zip_code, '').strip()
 
+            # Build license metadata for filtering
+            license_metadata = []
+            for lic in licenses:
+                license_metadata.append({
+                    'category': lic['license_category'],
+                    'market_type': lic['market_type'],
+                    'is_active': is_active_status(lic['status'])
+                })
+
             search_index.append({
                 'companies': company_names,
                 'city': city,
@@ -569,8 +581,46 @@ class MapGenerator:
                 'address': address,
                 'lat': lat,
                 'lon': lon,
-                'count': len(licenses)
+                'count': len(licenses),
+                'licenses': license_metadata,
+                'is_forsale': False
             })
+
+        # Add For Sale properties to search index
+        forsale_file = Path('data/processed/forsale_properties.csv')
+        if forsale_file.exists():
+            df_forsale = pd.read_csv(forsale_file)
+            df_forsale = df_forsale[df_forsale['geocode_status'] == 'success']
+
+            for _, row in df_forsale.iterrows():
+                # Extract city and zip from address
+                address = row['address']
+                city = ""
+                zip_code = ""
+
+                address_parts = address.split(',')
+                if len(address_parts) >= 2:
+                    last_part = address_parts[-1].strip()
+                    zip_match = re.search(r'\b\d{5}\b', last_part)
+                    if zip_match:
+                        zip_code = zip_match.group()
+                    city_match = re.search(r'^(.+?)\s+[A-Z]{2}\s+\d{5}', last_part)
+                    if city_match:
+                        city = city_match.group(1).strip()
+                    else:
+                        city = last_part.replace(zip_code, '').strip()
+
+                search_index.append({
+                    'companies': ['For Sale Property'],
+                    'city': city,
+                    'zip': zip_code,
+                    'address': address,
+                    'lat': row['latitude'],
+                    'lon': row['longitude'],
+                    'count': 1,
+                    'licenses': [],
+                    'is_forsale': True
+                })
 
         # Convert to JSON for JavaScript
         search_data_json = json.dumps(search_index)
@@ -591,6 +641,10 @@ class MapGenerator:
                 <button id="clear-search" style="padding: 6px 12px; background-color: #f44336; color: white;
                     border: none; border-radius: 3px; cursor: pointer; font-size: 13px;">Clear</button>
             </div>
+            <div id="filter-status" style="margin-top: 5px; font-size: 11px; color: #666; display: none;">
+                <i class="fa fa-filter" style="margin-right: 3px;"></i>
+                <span id="filter-status-text"></span>
+            </div>
             <div id="search-results" style="margin-top: 8px; font-size: 12px; color: #666; max-height: 200px; overflow-y: auto;"></div>
         </div>
 
@@ -599,9 +653,67 @@ class MapGenerator:
             var searchData = {search_data_json};
             console.log('Search data loaded:', searchData.length, 'locations');
 
+            // Store last search query for auto-refresh on filter change
+            window.lastSearchQuery = '';
+
+            // Check if screen is small (mobile/tablet)
+            function isSmallScreen() {{
+                return window.innerWidth < 768;
+            }}
+
+            // Get current filter state from checkboxes
+            function getCurrentFilterState() {{
+                return {{
+                    active: document.getElementById('filter-active').checked,
+                    inactive: document.getElementById('filter-inactive').checked,
+                    grower: document.querySelector('.license-type[data-category="Grower"]').checked,
+                    processor: document.querySelector('.license-type[data-category="Processor"]').checked,
+                    retailer: document.querySelector('.license-type[data-category="Retailer"]').checked,
+                    transporter: document.querySelector('.license-type[data-category="Transporter"]').checked,
+                    forSale: document.getElementById('filter-forsale').checked
+                }};
+            }}
+
+            // Check if a location is visible with current filters
+            function isLocationVisible(location, filterState) {{
+                // For Sale properties: check For Sale filter
+                if (location.is_forsale) {{
+                    return filterState.forSale;
+                }}
+
+                // License locations: check if ANY license matches filters
+                if (!location.licenses || location.licenses.length === 0) {{
+                    return true; // Backward compatibility
+                }}
+
+                for (var i = 0; i < location.licenses.length; i++) {{
+                    var license = location.licenses[i];
+
+                    // Check status filter (active/inactive)
+                    var statusMatch = (license.is_active && filterState.active) ||
+                                     (!license.is_active && filterState.inactive);
+
+                    if (!statusMatch) continue;
+
+                    // Check category filter
+                    var categoryMatch = false;
+                    if (license.category === 'Grower' && filterState.grower) categoryMatch = true;
+                    if (license.category === 'Processor' && filterState.processor) categoryMatch = true;
+                    if (license.category === 'Retailer' && filterState.retailer) categoryMatch = true;
+                    if (license.category === 'Transporter' && filterState.transporter) categoryMatch = true;
+
+                    if (categoryMatch) return true; // Both status AND category match
+                }}
+
+                return false; // No licenses matched
+            }}
+
             function performSearch() {{
                 var query = document.getElementById('search-input').value.toLowerCase().trim();
                 var resultsDiv = document.getElementById('search-results');
+
+                // Save query for auto-refresh on filter change
+                window.lastSearchQuery = query;
 
                 console.log('Search query:', query);
 
@@ -626,9 +738,37 @@ class MapGenerator:
                     window.highlightTimeout = null;
                 }}
 
+                // Get current filter state
+                var filterState = getCurrentFilterState();
+
+                // Update filter status indicator
+                var activeFilters = [];
+                if (!filterState.active) activeFilters.push('hiding Active');
+                if (!filterState.inactive) activeFilters.push('hiding Inactive');
+                if (!filterState.grower) activeFilters.push('hiding Growers');
+                if (!filterState.processor) activeFilters.push('hiding Processors');
+                if (!filterState.retailer) activeFilters.push('hiding Retailers');
+                if (!filterState.transporter) activeFilters.push('hiding Transporters');
+                if (!filterState.forSale) activeFilters.push('hiding For Sale');
+
+                var filterStatus = document.getElementById('filter-status');
+                var filterStatusText = document.getElementById('filter-status-text');
+
+                if (activeFilters.length > 0) {{
+                    filterStatusText.textContent = 'Filters active: ' + activeFilters.join(', ');
+                    filterStatus.style.display = 'block';
+                }} else {{
+                    filterStatus.style.display = 'none';
+                }}
+
                 // Search through the data with scoring for better ranking
                 var matches = [];
                 searchData.forEach(function(location) {{
+                    // Skip locations not visible with current filters
+                    if (!isLocationVisible(location, filterState)) {{
+                        return; // Skip to next location
+                    }}
+
                     var matchFound = false;
                     var matchType = '';
                     var matchScore = 0; // Higher score = better match
@@ -726,7 +866,11 @@ class MapGenerator:
 
                 // Display results
                 if (matches.length === 0) {{
-                    resultsDiv.innerHTML = '<span style="color: #f44336;">No results found for "' + query + '"</span>';
+                    var noResultMsg = 'No results found for "' + query + '"';
+                    if (activeFilters.length > 0) {{
+                        noResultMsg += ' (some results may be hidden by active filters)';
+                    }}
+                    resultsDiv.innerHTML = '<span style="color: #f44336;">' + noResultMsg + '</span>';
                     return;
                 }}
 
@@ -853,6 +997,13 @@ class MapGenerator:
                                 setTimeout(function() {{
                                     mapObj.invalidateSize();
                                 }}, 100);
+
+                                // Clear results on small screens
+                                if (isSmallScreen()) {{
+                                    document.getElementById('search-results').innerHTML = '';
+                                    document.getElementById('search-results').style.display = 'none';
+                                    // Keep search input text for easy re-searching
+                                }}
                             }}
                         }};
                     }})(match.lat, match.lon);
@@ -1210,13 +1361,36 @@ class MapGenerator:
                     }
                 }
 
+                // Function to refresh search results when filters change
+                function refreshSearchResults() {
+                    if (window.lastSearchQuery && window.lastSearchQuery.trim() !== '') {
+                        // Trigger search button click to refresh results
+                        var searchButton = document.getElementById('search-button');
+                        if (searchButton) {
+                            searchButton.click();
+                        }
+                    }
+                }
+
                 // Add event listeners
-                document.getElementById('filter-active').addEventListener('change', updateLayers);
-                document.getElementById('filter-inactive').addEventListener('change', updateLayers);
-                document.getElementById('filter-forsale').addEventListener('change', updateForSaleLayer);
+                document.getElementById('filter-active').addEventListener('change', function() {
+                    updateLayers();
+                    refreshSearchResults();
+                });
+                document.getElementById('filter-inactive').addEventListener('change', function() {
+                    updateLayers();
+                    refreshSearchResults();
+                });
+                document.getElementById('filter-forsale').addEventListener('change', function() {
+                    updateForSaleLayer();
+                    refreshSearchResults();
+                });
 
                 document.querySelectorAll('.license-type').forEach(function(checkbox) {
-                    checkbox.addEventListener('change', updateLayers);
+                    checkbox.addEventListener('change', function() {
+                        updateLayers();
+                        refreshSearchResults();
+                    });
                 });
 
                 // Initial update to set correct state
