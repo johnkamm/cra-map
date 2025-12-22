@@ -712,6 +712,9 @@ class MapGenerator:
                 var query = document.getElementById('search-input').value.toLowerCase().trim();
                 var resultsDiv = document.getElementById('search-results');
 
+                // Reset display property in case it was hidden by clicking a result on mobile
+                resultsDiv.style.display = '';
+
                 // Save query for auto-refresh on filter change
                 window.lastSearchQuery = query;
 
@@ -1062,7 +1065,11 @@ class MapGenerator:
 
             function clearSearch() {{
                 document.getElementById('search-input').value = '';
-                document.getElementById('search-results').innerHTML = '';
+                var resultsDiv = document.getElementById('search-results');
+                resultsDiv.innerHTML = '';
+
+                // Reset display property in case it was hidden on mobile
+                resultsDiv.style.display = '';
 
                 // Clear highlight
                 if (window.currentHighlight) {{
